@@ -16,11 +16,12 @@ namespace ChessProject3
         {
             InitializeComponent();
             ChessGame game = new ChessGame(panel1,8,8);
+            game.Run();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-
+          
         }
     }
 }

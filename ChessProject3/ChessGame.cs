@@ -11,13 +11,16 @@ namespace ChessProject3
     {
         Board board;
         PanelPainter painter;
-        ChessLogic logic;
-       public ChessGame(Panel p, uint maxX, uint maxY)
+        ChessLogic game;
+       public ChessGame(Panel p, int maxX, int maxY)
         {
             board = new Board(maxX, maxY);
-            logic = new ChessLogic(ref board);
-            painter = new PanelPainter(p);
-            logic.MovePiece(2, 3, 4, 5);
+            game = new ChessLogic(ref board);
+            painter = new PanelPainter(ref p,ref board);
+        }
+        public void Run()
+        {
+            game.nextRound();
         }
     }
 }

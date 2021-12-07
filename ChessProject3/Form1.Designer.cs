@@ -34,9 +34,9 @@ namespace ChessProject3
             // 
             // panel1
             // 
-            this.panel1.Location = new System.Drawing.Point(83, 36);
+            this.panel1.Location = new System.Drawing.Point(-6, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(200, 100);
+            this.panel1.Size = new System.Drawing.Size(745, 427);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -48,6 +48,8 @@ namespace ChessProject3
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.MaximumSize = new System.Drawing.Size(600, 565);
+            this.MinimumSize = new System.Drawing.Size(490, 445);
             this.ResumeLayout(false);
 
         }

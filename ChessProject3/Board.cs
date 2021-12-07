@@ -5,31 +5,55 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace ChessProject3
 {
 
-    class Board
+
+    public class Board
     {
-        uint[,] tile;
-        public Board(uint x, uint y)
+        iPiece[,] tile;
+        iPiece[] pieceList = new iPiece[13];
+        void initPieceList()
         {
-            tile = new uint[x, y];
+            bool black = true;
+            pieceList[1] = new Pawn();
+            pieceList[2] = new Rook();
+            pieceList[3] = new Bishop();
+            pieceList[4] = new Horse();
+            pieceList[5] = new King();
+            pieceList[6] = new Queen();
+
+            pieceList[7] = new Pawn(black);
+            pieceList[8] = new Rook(black);
+            pieceList[9] = new Bishop(black);
+            pieceList[10] = new Horse(black);
+            pieceList[11] = new King(black);
+            pieceList[12] = new Queen(black);
+        }
+        public Board(int x, int y)
+        {
+            tile = new iPiece[x, y];
+            initPieceList();
             initPiecesDefault();
         }
         
-        public void setTile(uint x, uint y, ePiece val = 0)
+        public void setTile(int x, int y, iPiece val)
         {
-                tile[x,y] = (uint)val;
+            tile[x,y] = val;
         }
-        public uint getTile(uint x, uint y)
+        public void setTile(int x, int y, ePiece val)
+        {
+            tile[x, y] = pieceList[(int)val];
+        }
+        public iPiece getTile(int x, int y)
         {
             return tile[x, y];
         }
         void initPiecesDefault()
         {
-            for (uint i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
+                Console.WriteLine(i);
                 setTile(i, 1, ePiece.pawnW);
                 setTile(i, 6, ePiece.pawnW);
             }

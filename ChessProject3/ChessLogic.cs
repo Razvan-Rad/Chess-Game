@@ -9,39 +9,64 @@ namespace ChessProject3
     class ChessLogic
     {
          Board board;
+        bool running = true;
+        int round = 0;
+        public bool isRunning() => running;
         public ChessLogic(ref Board b)
         {
            board = b;
         }
-        public void MovePiece(uint oldX, uint oldY, uint newX, uint newY)
+        public void nextRound()
         {
-            uint current = board.getTile(oldX, oldY);
-            uint target  = board.getTile(newX, newY);
-
-            if (canMove(current, target))// ex can move white horse over black queen?
+            if (round % 2 == 0)
             {
-                board.setTile(newX, newY, (ePiece)current);
+
+            }
+            else
+            {
+
+            }
+            round++;
+
+        }
+        public void movePiece(int oldX, int oldY, int newX, int newY)
+        {
+            iPiece current = board.getTile(oldX, oldY);
+            iPiece target  = board.getTile(newX, newY);
+             
+            if (canMove(current, target, oldX, oldY, newX , newY))
+            {
                 board.setTile(oldX, oldY, ePiece.none);
+                board.setTile(newX, newY, current);
             }
         }
-        bool canMove(uint current, uint target)
+        bool canMove(iPiece current, iPiece target, int oldX, int oldY, int newX, int newY)
         {
-            if (isCheck() || doesPieceTakeAllyPiece(current,target)) return false;
-            Horse horse1 = new Horse();
-            horse1.getValidMoveList(3, 2);
+            if (target == null) target =new Pawn();
+            if (isCheck()) return false;
+            if (pieceTakeAllyPiece(current, target)) return false;
+            if (squareUnreachable(current, oldX, oldY, newX, newY)) return false;
+            
 
+            return true;
+        }
+        bool squareUnreachable(iPiece current, int oldX, int oldY, int newX, int newY)
+        {
+            foreach (Tuple<int, int> element in current.getValidMoveList((int)oldX, (int)oldY))
+            {
+                if(element.Item1 == newX && element.Item2 == newY) return false;
+            }
             return true;
         }
         bool isCheck()
         {
             return false;
         }
-        bool doesPieceTakeAllyPiece(uint target, uint piece)
+        bool pieceTakeAllyPiece(iPiece current, iPiece target)
         {
-            if ((target < 7 && piece < 7) ||
-                (target > 7 && piece > 7))
-                return true;
-            return false;
+            bool color = (int)current.getId() > 6;
+            bool color2 = (int)target.getId() > 6;
+            return color && color;
         }
 
     }

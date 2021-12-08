@@ -15,7 +15,7 @@ namespace ChessProject3
        public ChessGame(Panel p, int maxX, int maxY)
         {
             board = new Board(maxX, maxY);
-            game = new ChessLogic(ref board);
+            game = new ChessLogic(board);
             painter = new PanelPainter(ref p,ref board);
         }
         public void Run()

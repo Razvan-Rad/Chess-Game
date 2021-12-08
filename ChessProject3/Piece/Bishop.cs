@@ -32,7 +32,7 @@ namespace ChessProject3
         public Bishop(bool isBlack = false)
         {
             if (isBlack) this.setId(ePiece.bishopB);
-            else this.setId(ePiece.bishopB);
+            else this.setId(ePiece.bishopW);
             init();
         }
 

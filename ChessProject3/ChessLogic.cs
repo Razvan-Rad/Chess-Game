@@ -12,9 +12,10 @@ namespace ChessProject3
         bool running = true;
         int round = 0;
         public bool isRunning() => running;
-        public ChessLogic(ref Board b)
+        public ChessLogic(Board b)
         {
-           board = b;
+            board = b;
+            initPiecesDefault();
         }
         public void nextRound()
         {
@@ -28,6 +29,39 @@ namespace ChessProject3
             }
             round++;
 
+        }
+        void initPiecesDefault()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                Console.WriteLine(i);
+                board.setTile(i, 1, ePiece.pawnW);
+                board.setTile(i, 6, ePiece.pawnB);
+            }
+
+            board.setTile(0, 0, ePiece.rookW);
+            board.setTile(7, 0, ePiece.rookW);
+
+            board.setTile(0, 7, ePiece.rookB);
+            board.setTile(7, 7, ePiece.rookB);
+
+            board.setTile(1, 0, ePiece.horseW);
+            board.setTile(6, 0, ePiece.horseW);
+
+            board.setTile(1, 7, ePiece.horseB);
+            board.setTile(6, 7, ePiece.horseB);
+
+            board.setTile(2, 0, ePiece.bishopW);
+            board.setTile(5, 0, ePiece.bishopW);
+
+            board.setTile(2, 7, ePiece.bishopB);
+            board.setTile(5, 7, ePiece.bishopB);
+
+            board.setTile(3, 0, ePiece.kingW);
+            board.setTile(4, 0, ePiece.queenW);
+
+            board.setTile(3, 7, ePiece.kingB);
+            board.setTile(4, 7, ePiece.queenB);
         }
         public void movePiece(int oldX, int oldY, int newX, int newY)
         {

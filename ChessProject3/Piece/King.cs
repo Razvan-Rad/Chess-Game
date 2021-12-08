@@ -12,7 +12,14 @@ namespace ChessProject3
         {
             moves = new TupleList<int, int>
                 {
-                {0,1}
+                {0,1},
+                {1,0},
+                {1,1},
+                {0,-1},
+                {-1,0},
+                {-1,1},
+                {1,-1},
+                {-1,-1}
                 };
         }
         public King(bool isBlack = false)

@@ -78,11 +78,11 @@ namespace ChessProject3
         public static Dictionary<ePiece, Image> sprites = new Dictionary<ePiece, Image>()
         {
             {ePiece.rookB , Resource.BlackRook },
-            {ePiece.bishopB , Resource.BlackBishop },
+            {ePiece.bishopB , Resource.BlackBishop},
             {ePiece.horseB, Resource.BlackKnight},
             {ePiece.kingB, Resource.BlackKing},
             {ePiece.pawnB , Resource.BlackPawn},
-            {ePiece.queenB , Resource.BlackBishop},
+            {ePiece.queenB , Resource.BlackQueen},
 
             {ePiece.rookW , Resource.WhiteRook},
             {ePiece.bishopW , Resource.WhiteBishop},

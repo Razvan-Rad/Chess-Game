@@ -12,31 +12,43 @@ namespace ChessProject3
 
     class PanelPainter
     {
+        int squareSize;
         Panel p;
         Board b;
-
         Color black = Color.FromArgb(255, 240, 217, 181);
         Color white = Color.FromArgb(255, 181, 136, 99);
 
-        public PanelPainter(ref Panel target, ref Board board)
+        Bitmap bm;
+        public PanelPainter(ref Panel target, ref Board board, int squareSize)
         {
             this.p = target;
             this.b = board;
-            updateAll();
-
+            this.squareSize = squareSize;
+            bm = new Bitmap(squareSize * 12, squareSize * 12);
+            refreshBg(squareSize);
+        }
+        public void paintRange(List<Tuple<int, int>> list)
+        {
+            draw();
+            using (Graphics g = Graphics.FromImage(p.BackgroundImage))
+            using (SolidBrush pinkBrush = new SolidBrush(Color.FromArgb(129, Color.Pink)))
+                for (int i = 0; i < list.Count; i++)
+                {
+                    g.FillRectangle(pinkBrush, list[i].Item1 * 60, list[i].Item2 * 60, 60, 60);
+                }
+            update();
         }
         void drawPiece(int x, int y)
         {
             Graphics g = Graphics.FromImage(p.BackgroundImage);
-            //g.CompositingMode = CompositingMode.SourceOver;
+            g.CompositingMode = CompositingMode.SourceOver;
 
             iPiece currentPiece = b.getTile(x, y);
             g.DrawImage(sprites[currentPiece.getId()], new Point(x * 61, y * 61));
 
         }
-        void updateBg(int size)
+        void refreshBg(int size = 60)
         {
-            Bitmap bm = new Bitmap(800, 800);
             using (Graphics g = Graphics.FromImage(bm))
             using (SolidBrush blackBrush = new SolidBrush(black))
             using (SolidBrush whiteBrush = new SolidBrush(white))
@@ -54,25 +66,29 @@ namespace ChessProject3
                 p.BackgroundImage = bm;
             }
         }
-        void updateAll()
+        public void draw(bool bg = false)
         {
-            int squareSize = 60;
-            updateBg(squareSize);
+            if(bg)refreshBg(60);
+            drawAllPieces();
+            update();
+        }
+        public void update()
+        {
+            p.Refresh();
+        }
+        public void drawAllPieces()
+        {
 
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    if(b.getTile(i,j) != null)
+                    if (b.getTile(i, j) != null)
                     {
                         drawPiece(i, j);
                     }
                 }
             }
-        }
-        public void draw()
-        {
-            updateAll();
         }
 
         public static Dictionary<ePiece, Image> sprites = new Dictionary<ePiece, Image>()
@@ -87,9 +103,9 @@ namespace ChessProject3
             {ePiece.rookW , Resource.WhiteRook},
             {ePiece.bishopW , Resource.WhiteBishop},
             {ePiece.horseW, Resource.WhiteKnight},
-            {ePiece.kingW, Resource.WhiteKing},
+            {ePiece.kingW, Resource.WhiteQueen},
             {ePiece.pawnW , Resource.WhitePawn},
-            {ePiece.queenW , Resource.WhiteQueen },
+            {ePiece.queenW , Resource.WhiteKing },
 
         };
     }

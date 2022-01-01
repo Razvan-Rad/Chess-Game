@@ -28,41 +28,67 @@ namespace ChessProject3
 
     public class TupleList<T1, T2> : List<Tuple<T1, T2>>
     {
+        public void merge(List<Tuple<T1,T2>> list)
+        {
+
+            foreach(Tuple<T1,T2> iter in list)
+            {
+                Add(iter); 
+            }
+        }
         public void Add(T1 item, T2 item2)
         {
-            Add(new Tuple<T1, T2>(item, item2));
+            Add(Tuple.Create(item, item2));
         }
     }
 
     public abstract class iPiece
     {
+       protected bool dynamicMoveSet = false;
         ePiece id = ePiece.none;
         public ePiece getId() => id;
         protected void setId(ePiece id) => this.id = id;
         protected TupleList<int, int> moves { get; set; }
-        protected abstract void initMoveSet();
+        protected abstract void init();
+        void resetCustomMoves()
+        {
+            moves = null;
+        }
+        protected abstract TupleList<int,int> getDynamicMovesList(int pieceX, int pieceY);
         public List<Tuple<int, int>> getValidMoveList(int pieceX, int pieceY)
         {
-            List<Tuple<int, int>> list = new List<Tuple<int, int>>();
 
-            for (int i = 0; i < moves.Count; i++)
+            //check for dynamic
+            if (dynamicMoveSet)
             {
-                int offsetX = moves[i].Item1;
-                int offsetY = moves[i].Item2;
+                return getDynamicMovesList(pieceX, pieceY);
+            }
+            //check for hard coded
+            else
+            {
+                List<Tuple<int, int>> list = new List<Tuple<int, int>>();
 
-                int destX = pieceX + offsetX;
-                int destY = pieceY + offsetY;
-
-                if (destX < 8 && destY < 8 &&
-                 destX >= 0 && destY >= 0)
+                for (int i = 0; i < moves.Count; i++)
                 {
+                    int offsetX = moves[i].Item1;
+                    int offsetY = moves[i].Item2;
 
-                    Tuple<int, int> move = new Tuple<int, int>(destX, destY);
-                    list.Add(move);
+                    int destX = pieceX + offsetX;
+                    int destY = pieceY + offsetY;
+
+                    if (destX < 8 && destY < 8 &&
+                     destX >= 0 && destY >= 0)
+                    {
+
+                        Tuple<int, int> move = Tuple.Create(destX, destY);
+                        list.Add(move);
+                    }
+
                 }
 
+                return list;
+
             }
-            return list;
         }
 
     }

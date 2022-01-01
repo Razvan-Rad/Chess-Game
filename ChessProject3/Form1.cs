@@ -12,16 +12,30 @@ namespace ChessProject3
 {
     public partial class Form1 : Form
     {
+        ChessGame game;
         public Form1()
         {
             InitializeComponent();
-            ChessGame game = new ChessGame(panel1,8,8);
-            game.Run();
+            game = new ChessGame(panel1, 8, 8);
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-          
+
+        }
+
+        private void panel1_Click(object sender, EventArgs e)
+        {
+            Point point = panel1.PointToClient(Cursor.Position);
+            int x = point.X / 60;
+            int y = point.Y / 60;
+            game.clickTile(x, y);
+            
+            //MessageBox.Show("x: " + x.ToString(), y.ToString());
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
         }
     }
 }

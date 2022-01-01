@@ -8,19 +8,35 @@ namespace ChessProject3
 {
     class Pawn : iPiece
     {
-
-        protected override void initMoveSet()
+        bool firstMove = true;
+        protected override void init()
         {
-            moves = new TupleList<int, int>
+            if (this.getId() == ePiece.pawnB)
+            {
+                moves = new TupleList<int, int>
                 {
-                {0,1}
+                {0,1},
                 };
+
+            }
+            else
+            {
+                moves = new TupleList<int, int>
+                {
+                {0,-1}
+                };
+
+            }
+        }
+        protected override TupleList<int,int> getDynamicMovesList(int pieceX, int pieceY)
+        {
+            throw new NotImplementedException();
         }
         public Pawn(bool isBlack = false)
         {
             if (isBlack) this.setId(ePiece.pawnB);
             else this.setId(ePiece.pawnW);
-            initMoveSet();
+            init();
         }
 
     }

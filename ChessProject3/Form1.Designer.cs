@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Forms;
+
 namespace ChessProject3
 {
     partial class Form1
@@ -34,22 +36,23 @@ namespace ChessProject3
             // 
             // panel1
             // 
+            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.panel1.Location = new System.Drawing.Point(-6, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(745, 608);
+            this.panel1.Size = new System.Drawing.Size(1098, 675);
             this.panel1.TabIndex = 0;
+            this.panel1.Click += new System.EventHandler(this.panel1_Click);
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 509);
+            this.ClientSize = new System.Drawing.Size(1358, 661);
             this.Controls.Add(this.panel1);
-            this.MaximumSize = new System.Drawing.Size(600, 565);
-            this.MinimumSize = new System.Drawing.Size(490, 445);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }

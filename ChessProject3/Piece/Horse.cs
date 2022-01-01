@@ -8,7 +8,7 @@ namespace ChessProject3
 {
    public class Horse : iPiece
     {
-        protected override void initMoveSet()
+        protected override void init()
         {
             moves = new TupleList<int, int>
                 {   // Right hand side
@@ -28,8 +28,12 @@ namespace ChessProject3
         {
             if (isBlack) this.setId(ePiece.horseB);
             else this.setId(ePiece.horseW);
-            initMoveSet();
+            init();
         }
-   
+        protected override TupleList<int,int> getDynamicMovesList(int pieceX, int pieceY)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

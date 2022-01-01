@@ -8,18 +8,27 @@ namespace ChessProject3
 {
     class Queen : iPiece
     {
-        protected override void initMoveSet()
+        protected override void init()
         {
-            moves = new TupleList<int, int>
-                {
-                {0,1}
-                };
+            dynamicMoveSet = true;
+        }
+
+        protected override TupleList<int, int> getDynamicMovesList(int pieceX, int pieceY)
+        {
+            moves = null;
+            TupleList<int, int> newMoves = new TupleList<int, int> { };
+
+            newMoves.AddRange(ChessLogic.getDynamicBishopMoves(pieceX, pieceY));
+            newMoves.AddRange(ChessLogic.getDynamicRookMoves(pieceX, pieceY));
+
+            moves = newMoves;
+            return newMoves;
         }
         public Queen(bool isBlack = false)
         {
             if (isBlack) this.setId(ePiece.queenB);
             else this.setId(ePiece.queenW);
-            initMoveSet();
+            init();
         }
     }
 }

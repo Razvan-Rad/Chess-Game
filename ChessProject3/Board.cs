@@ -34,6 +34,10 @@ namespace ChessProject3
             initPieceList();
         }
         
+        public ePiece ePiecegetTile(int x, int y)
+        {
+            return tile[x, y].getId();
+        }
         public void setTile(int x, int y, iPiece val)
         {
             tile[x,y] = val;

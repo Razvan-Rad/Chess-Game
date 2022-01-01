@@ -42,13 +42,19 @@ namespace ChessProject3
         {
             tile[x,y] = val;
         }
+        public void moveTile(int oldX, int oldY, int newX, int newY)
+        {
+            tile[newX, newY] = tile[oldX, oldY];
+            tile[oldX, oldY] = null;    
+
+        }
         public void setTile(int x, int y, ePiece val)
         {
             tile[x, y] = pieceMap[(int)val];
         }
-        public iPiece getTile(int x, int y)
+        public ref iPiece getTile(int x, int y)
         {
-            return tile[x, y];
+            return ref tile[x, y];
         }
       
     }

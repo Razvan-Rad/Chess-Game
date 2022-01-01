@@ -6,17 +6,21 @@ using System.Threading.Tasks;
 
 namespace ChessProject3
 {
-   public class Bishop : iPiece
+    public class Bishop : iPiece
     {
         protected override void init()
         {
-            moves = new TupleList<int, int>
-                {  
-                };
+            dynamicMoveSet = true;
         }
-        protected override TupleList<int,int> getDynamicMovesList(int pieceX, int pieceY)
+        protected override TupleList<int, int> getDynamicMovesList(int pieceX, int pieceY)
         {
-            throw new NotImplementedException();
+            moves = null;
+            TupleList<int, int> newMoves = new TupleList<int, int> { };
+
+            newMoves.AddRange(ChessLogic.getDynamicBishopMoves(pieceX, pieceY));
+            moves = newMoves;
+            return newMoves;
+
         }
         public Bishop(bool isBlack = false)
         {

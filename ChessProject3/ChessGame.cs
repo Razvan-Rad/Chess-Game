@@ -43,7 +43,10 @@ namespace ChessProject3
                 }
                 else
                 {
-                    game.movePiece(selectedPiece.X, selectedPiece.Y, x, y);
+                    if(game.movePiece(selectedPiece.X, selectedPiece.Y, x, y))
+                    {
+                        game.round++;
+                    }
                 }
                 selectedPiece = new Point(x, y);
                 alreadySelectedASquare = false;

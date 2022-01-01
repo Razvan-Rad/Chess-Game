@@ -11,7 +11,7 @@ namespace ChessProject3
     {
         Board board;
         bool running = true;
-        int round = 0;
+        public int round = 0;
         bool whiteRound() => round % 2 == 0;
         public bool isRunning() => running;
 
@@ -99,16 +99,46 @@ namespace ChessProject3
 
             if (canMove(current, target, oldX, oldY, newX, newY))
             {
-                board.setTile(oldX, oldY, ePiece.none);
-                board.setTile(newX, newY, current);
+                board.moveTile(oldX, oldY,newX,newY);
+                return true;
             }
-            else
-            {
                 return false;
-
+        }
+        bool anythingInTheWay(iPiece current, int oldX, int oldY, int newX, int newY)
+        {
+            if (current.isSameAs(ePiece.rookW))
+            {
+                if(oldX == newX)
+                {
+                    int iterStart = oldY;
+                    int iterEnd = newY;
+                    if(newY <  oldY)
+                    {
+                        iterStart = newY;
+                        iterEnd = oldY;
+                    }
+                    
+                    for(int i = iterStart+1; i < iterEnd; i++)
+                    {
+                        if(board.getTile(oldX,i)!= null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
-            return true;
+            if (current.isSameAs(ePiece.bishopW))
+            {
+                //for (int i = oldX, j = oldY; i < newX && j < newY; i++, j)
+                //{
+                //    //if (board.getTile(i, oldY).)
+                //}
+            }
+            bool ret = false;
 
+
+            return ret;
         }
         bool canMove(iPiece current, iPiece target, int oldX, int oldY, int newX, int newY)
         {
@@ -117,14 +147,17 @@ namespace ChessProject3
             {
                 if (pieceTakeAllyPiece(current, target)) ret = false;
             }
+            // if empty board, can piece move there
             if (squareUnreachable(current, oldX, oldY, newX, newY)) ret = false;
+            if (anythingInTheWay(current, oldX, oldY, newX, newY)) ret = false;
+            // after move, is there check?
             if (isCheck()) ret = false;
 
             return ret;
         }
         bool squareUnreachable(iPiece current, int oldX, int oldY, int newX, int newY)
         {
-            foreach (Tuple<int, int> element in current.getValidMoveList((int)oldX, (int)oldY))
+            foreach (Tuple<int, int> element in current.getMoves(oldX,oldY))
             {
                 if (element.Item1 == newX && element.Item2 == newY) return false;
             }
@@ -134,9 +167,9 @@ namespace ChessProject3
         {
             return false;
         }
-        public static TupleList<int,int> getDynamicBishopMoves(int pieceX,int pieceY)
+        public static TupleList<int, int> getDynamicBishopMoves(int pieceX, int pieceY)
         {
-            TupleList<int, int> list = new TupleList<int, int>(){ };
+            TupleList<int, int> list = new TupleList<int, int>() { };
             // Top Left to bottom right diagonal
             for (int i = pieceX, j = pieceY; i < 8 && j < 8; i++, j++)
             {
@@ -157,7 +190,7 @@ namespace ChessProject3
             }
             return list;
         }
-        public static TupleList<int,int> getDynamicRookMoves(int pieceX,int pieceY)
+        public static TupleList<int, int> getDynamicRookMoves(int pieceX, int pieceY)
         {
             TupleList<int, int> list = new TupleList<int, int>() { };
             //rook left to right
@@ -170,13 +203,13 @@ namespace ChessProject3
                 list.Add(Tuple.Create(i, pieceY));
             }
             //rook top to bottom
-            for(int i = pieceY; i < 8;i++)
+            for (int i = pieceY; i < 8; i++)
             {
-                list.Add(Tuple.Create(pieceX,i));
+                list.Add(Tuple.Create(pieceX, i));
             }
-            for(int i = pieceY;i >=0;i--)
+            for (int i = pieceY; i >= 0; i--)
             {
-                list.Add(Tuple.Create(pieceX,i)); 
+                list.Add(Tuple.Create(pieceX, i));
             }
             return list;
         }
@@ -184,7 +217,7 @@ namespace ChessProject3
         {
             bool color = (int)current.getId() > 6;
             bool color2 = (int)target.getId() > 6;
-            return color && color;
+            return !(color ^ color2);
         }
 
     }

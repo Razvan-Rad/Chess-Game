@@ -46,28 +46,34 @@ namespace ChessProject3
     {
        protected bool dynamicMoveSet = false;
         ePiece id = ePiece.none;
+       public bool isSameAs(ePiece piece)
+        {
+            return (int)id % 6 == (int)piece % 6;
+        }
         public ePiece getId() => id;
         protected void setId(ePiece id) => this.id = id;
         protected TupleList<int, int> moves { get; set; }
         protected abstract void init();
-        void resetCustomMoves()
+        public TupleList<int, int> getMoves(int x, int y)
         {
-            moves = null;
+            if(dynamicMoveSet)
+            {
+                moves = getDynamicMovesList(x, y);
+            }
+            return moves;
         }
         protected abstract TupleList<int,int> getDynamicMovesList(int pieceX, int pieceY);
         public List<Tuple<int, int>> getValidMoveList(int pieceX, int pieceY)
         {
-
+            TupleList<int, int> ret = new TupleList<int,int>();
             //check for dynamic
             if (dynamicMoveSet)
             {
-                return getDynamicMovesList(pieceX, pieceY);
+                ret =  getDynamicMovesList(pieceX, pieceY);
             }
             //check for hard coded
             else
             {
-                List<Tuple<int, int>> list = new List<Tuple<int, int>>();
-
                 for (int i = 0; i < moves.Count; i++)
                 {
                     int offsetX = moves[i].Item1;
@@ -81,14 +87,13 @@ namespace ChessProject3
                     {
 
                         Tuple<int, int> move = Tuple.Create(destX, destY);
-                        list.Add(move);
+                        ret.Add(move);
                     }
 
                 }
 
-                return list;
-
             }
+            return ret;
         }
 
     }

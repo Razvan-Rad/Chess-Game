@@ -56,7 +56,11 @@ namespace ChessProject3
             {
                 if (game.squareSelectionSuccess(x, y))
                 {
-                    painter.paintRange(board.getTile(x, y).getValidMoveList(x, y));
+
+                    //Drawing range
+                    TupleList<int, int> moves = board.getTile(x, y).getValidMoveList(x, y, false);
+                    painter.paintRange(moves);
+
                     alreadySelectedASquare = true;
                     selectedPiece = new Point(x, y);
                 }

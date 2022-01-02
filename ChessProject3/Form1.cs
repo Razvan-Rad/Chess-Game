@@ -29,8 +29,12 @@ namespace ChessProject3
             Point point = panel1.PointToClient(Cursor.Position);
             int x = point.X / 60;
             int y = point.Y / 60;
-            game.clickTile(x, y);
-            
+            if ((x < 8 && y < 8) && (x >= 0 && y >= 0))
+            { 
+                game.clickTile(x, y);
+                
+
+            }
             //MessageBox.Show("x: " + x.ToString(), y.ToString());
         }
 

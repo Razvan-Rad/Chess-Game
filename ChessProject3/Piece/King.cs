@@ -23,7 +23,7 @@ namespace ChessProject3
                 {-1,0}
                 };
         }
-        protected override TupleList<int,int> getDynamicMovesList(int pieceX, int pieceY)
+        protected override TupleList<int,int> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             throw new NotImplementedException();
         }

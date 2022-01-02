@@ -12,7 +12,7 @@ namespace ChessProject3
         {
             dynamicMoveSet = true;
         }
-        protected override TupleList<int, int> getDynamicMovesList(int pieceX, int pieceY)
+        protected override TupleList<int, int> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             moves = null;
             TupleList<int, int> newMoves = new TupleList<int, int> { };

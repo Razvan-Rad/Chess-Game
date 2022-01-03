@@ -10,20 +10,21 @@ namespace ChessProject3
     {
         protected override void init()
         {
-            moves = new TupleList<int, int>
+            staticMoveSet = true;
+            moves = new List<Tuple<int,int>>
                 {
-                {0,1},
-                {1,0},
-                {1,1},
-                {1,-1},
-                {0,-1},
-                {-1,0},
-                {-1,1},
-                {-1,-1},
-                {-1,0}
+                Tuple.Create(0,1),
+                Tuple.Create(1,0),
+                Tuple.Create(1,1),
+                Tuple.Create(1,-1),
+                Tuple.Create(0,-1),
+                Tuple.Create(-1,0),
+                Tuple.Create(-1,1),
+                Tuple.Create(-1,-1),
+                Tuple.Create(-1,0)
                 };
         }
-        protected override TupleList<int,int> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
+        protected override List<Tuple<int,int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             throw new NotImplementedException();
         }

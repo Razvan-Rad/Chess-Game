@@ -13,23 +13,23 @@ namespace ChessProject3
         {
             dynamicMoveSet = true;
         }
-        protected override TupleList<int, int> getDynamicMoveList(int pieceX, int pieceY, bool resetMove = true)
+        protected override List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool resetMove = true)
         {
-            TupleList<int, int> newMoves;
+            List<Tuple<int, int>> newMoves;
             if (this.getId() == ePiece.pawnB)
             {
-                newMoves = new TupleList<int, int> { { pieceX, pieceY + 1 } };
+                newMoves = new List<Tuple<int, int>> { Tuple.Create(pieceX, pieceY + 1) };
                 if (firstMove)
                 {
-                    newMoves.Add(pieceX, pieceY + 2);
+                    newMoves.Add(Tuple.Create(pieceX, pieceY + 2));
                 }
             }
             else
             {
-                newMoves = new TupleList<int, int> { { pieceX, pieceY - 1 } };
+                newMoves = new List<Tuple<int, int>> { Tuple.Create(pieceX, pieceY - 1) };
                 if (firstMove)
                 {
-                    newMoves.Add(pieceX, pieceY - 2);
+                    newMoves.Add(Tuple.Create(pieceX, pieceY - 2));
                 }
 
             }
@@ -39,7 +39,7 @@ namespace ChessProject3
             {
                 firstMove = false;
             }
-            
+
             return newMoves;
         }
         public Pawn(bool isBlack = false)

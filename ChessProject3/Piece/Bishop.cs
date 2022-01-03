@@ -12,10 +12,10 @@ namespace ChessProject3
         {
             dynamicMoveSet = true;
         }
-        protected override TupleList<int, int> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
+        protected override List<Tuple<int,int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             moves = null;
-            TupleList<int, int> newMoves = new TupleList<int, int> { };
+            List<Tuple<int,int>> newMoves = new List<Tuple<int,int>> { };
 
             newMoves.AddRange(ChessLogic.getDynamicBishopMoves(pieceX, pieceY));
             moves = newMoves;

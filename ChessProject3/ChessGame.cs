@@ -36,15 +36,15 @@ namespace ChessProject3
         }
         public void clickTile(int x, int y)
         {
+            bool enableFilters = true;
             if (alreadySelectedASquare) //Select where to move to
             {
-                if (isSamePiece( x,  y))
+                if (!isSamePiece( x,  y))
                 {
-                }
-                else
-                {
-                    if(game.movePiece(selectedPiece.X, selectedPiece.Y, x, y))
+                    List<Tuple<int,int>> moves = game.getValidMoves(selectedPiece.X, selectedPiece.Y, x, y, enableFilters);
+                    if(moves.Contains(Tuple.Create<int,int>(x,y)))
                     {
+                        game.movePiece(selectedPiece.X,selectedPiece.Y, x,y);
                         game.round++;
                     }
                 }
@@ -56,13 +56,11 @@ namespace ChessProject3
             {
                 if (game.squareSelectionSuccess(x, y))
                 {
-
-                    //Drawing range
-                    TupleList<int, int> moves = board.getTile(x, y).getValidMoveList(x, y, false);
-                    painter.paintRange(moves);
-
-                    alreadySelectedASquare = true;
                     selectedPiece = new Point(x, y);
+                    //Drawing range
+                    List<Tuple<int,int>> moves = game.getValidMoves(selectedPiece.X, selectedPiece.Y,x,y, enableFilters);
+                    painter.paintRange(moves);
+                    alreadySelectedASquare = true;
                 }
             }
         }

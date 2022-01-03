@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace ChessProject3
 {
@@ -107,9 +108,9 @@ namespace ChessProject3
             int finalX = (oldX > newX) ? oldX : newX;
             int iterY = (oldY < newY) ? oldY : newY;
             int finalY = (oldY > newY) ? oldY : newY;
-            for(int i = iterX+1, j = iterY+1; i < finalX && j < finalY; i++, j++)
+            for (int i = iterX + 1, j = iterY + 1; i < finalX && j < finalY; i++, j++)
             {
-                if(board.getTile(i, j) != null)
+                if (board.getTile(i, j) != null)
                 {
                     return true;
                 }
@@ -136,7 +137,7 @@ namespace ChessProject3
                     }
                 }
             }
-            else if(oldY == newY)
+            else if (oldY == newY)
             {
                 int iterStart = oldX;
                 int iterEnd = newX;
@@ -155,62 +156,76 @@ namespace ChessProject3
             }
             return false;
         }
-        bool anythingInTheWay(iPiece current, int oldX, int oldY, int newX, int newY)
+        void filterAnythingInTheWay(int oldX, int oldY, ref List<Tuple<int,int>> list)
         {
+            List<Tuple<int,int>> toRemove = new List<Tuple<int,int>>();
+            iPiece current = board.getTile(oldX, oldY);
+            foreach (Tuple<int, int> element in list)
+            {
+                int newX = element.Item1;
+                int newY = element.Item2;
+                if (current.isSameAs(ePiece.rookW) && anythingInTheWayRook(oldX, oldY, newX, newY))
+                {
+                    toRemove.Add(element);
+                }
+                else if (current.isSameAs(ePiece.bishopW) && anythingInTheWayBishop(oldX, oldY, newX, newY))
+                {
+                    toRemove.Add(element);
+                }
+                else if (
+                    current.isSameAs(ePiece.queenW) &&
+                    anythingInTheWayRook(oldX, oldY, newX, newY) ||
+                    anythingInTheWayBishop(oldX, oldY, newX, newY))
+                {
+                    toRemove.Add(element);
+                }
+            }
 
-            bool ret = false;
-            if (current.isSameAs(ePiece.rookW))
-            {
-                ret = anythingInTheWayRook(oldX, oldY, newX, newY);
-            }
-            else if (current.isSameAs(ePiece.bishopW))
-            {
-                ret = anythingInTheWayBishop(oldX, oldY, newX, newY);
-            }
-            else if(current.isSameAs(ePiece.queenW))
-            {
-                ret = anythingInTheWayRook(oldX, oldY, newX, newY) || anythingInTheWayBishop(oldX, oldY, newX, newY);
-            }
+            list = list.Except(toRemove).ToList();
+        }
 
+        public List<Tuple<int,int>> getValidMoves(int x, int y, int dx, int dy, bool enableFilters = false)
+        {
+            List<Tuple<int,int>> ret;
+
+            iPiece current = board.getTile(x, y);
+            iPiece target = board.getTile(dx, dy);
+
+            ret = current.getUnfilteredMoves(x, y);
+            if (enableFilters)
+            {
+                //moves are within bounds now
+                if (target != null)
+                {
+                    filterPieceTakeAllyPiece(current,ref ret);
+                }
+               filterAnythingInTheWay(x, y,ref ret);
+                //// after move, is there check?
+                //if (isCheck()) ret = false;
+
+            }
             return ret;
         }
-        //TupleList<int,int> filterMoves(int oldX, int oldY, int newX, int newY)
-        //{
-        //    iPiece current = board.getTile(oldX, oldY);
-        //    iPiece target = board.getTile(newX, newY);
-        //    bool ret = true;
-        //    if (target != null)
-        //    {
-        //        if (pieceTakeAllyPiece(current, target)) ret = false;
-        //    }
-        //    // if empty board, can piece move there
-        //    if (squareUnreachable(current, oldX, oldY, newX, newY)) ret = false;
-        //    if (anythingInTheWay(current, oldX, oldY, newX, newY)) ret = false;
-        //    // after move, is there check?
-        //    if (isCheck()) ret = false;
 
-        //    return ret;
-        //}
         bool canMove(int oldX, int oldY, int newX, int newY)
         {
             iPiece current = board.getTile(oldX, oldY);
             iPiece target = board.getTile(newX, newY);
-            bool ret = true;
-            if (target != null)
+            bool ret = false;
+            List<Tuple<int,int>> moveset = getValidMoves(oldX, oldY, newX, newY);
+            if (moveset != null)
             {
-                if (pieceTakeAllyPiece(current, target)) ret = false;
+                filterReachableSquares(oldX, oldY, newX, newY, moveset);
+                if(moveset.Count > 0)
+                {
+                    ret = true;
+                }
             }
-            // if empty board, can piece move there
-            if (squareUnreachable(current, oldX, oldY, newX, newY)) ret = false;
-            if (anythingInTheWay(current, oldX, oldY, newX, newY)) ret = false;
-            // after move, is there check?
-            if (isCheck()) ret = false;
-
             return ret;
         }
-        bool squareUnreachable(iPiece current, int oldX, int oldY, int newX, int newY)
+        bool filterReachableSquares(int oldX, int oldY, int newX, int newY, List<Tuple<int,int>> moveset)
         {
-            foreach (Tuple<int, int> element in current.getValidMoveList(oldX, oldY))
+            foreach (Tuple<int, int> element in moveset)
             {
                 if (element.Item1 == newX && element.Item2 == newY) return false;
             }
@@ -220,9 +235,9 @@ namespace ChessProject3
         {
             return false;
         }
-        public static TupleList<int, int> getDynamicBishopMoves(int pieceX, int pieceY)
+        public static List<Tuple<int,int>> getDynamicBishopMoves(int pieceX, int pieceY)
         {
-            TupleList<int, int> list = new TupleList<int, int>() { };
+            List<Tuple<int,int>> list = new List<Tuple<int,int>>() { };
             // Top Left to bottom right diagonal
             for (int i = pieceX, j = pieceY; i < 8 && j < 8; i++, j++)
             {
@@ -243,9 +258,9 @@ namespace ChessProject3
             }
             return list;
         }
-        public static TupleList<int, int> getDynamicRookMoves(int pieceX, int pieceY)
+        public static List<Tuple<int,int>> getDynamicRookMoves(int pieceX, int pieceY)
         {
-            TupleList<int, int> list = new TupleList<int, int>() { };
+            List<Tuple<int,int>> list = new List<Tuple<int,int>>() { };
             //rook left to right
             for (int i = pieceX; i < 8; i++)
             {
@@ -266,6 +281,22 @@ namespace ChessProject3
             }
             return list;
         }
+        void filterPieceTakeAllyPiece(iPiece current, ref List<Tuple<int,int>> list)
+        {
+            List<Tuple<int,int>> toRemove = new List<Tuple<int,int>>();
+            foreach (Tuple<int, int> element in list)
+            {
+                iPiece target = board.getTile(element.Item1, element.Item2);
+                if (target != null)
+                {
+                    if (pieceTakeAllyPiece(current, target))
+                    {
+                        toRemove.Add(element);
+                    }
+                }
+            }
+         list =  list.Except(toRemove).ToList();
+        }
         bool pieceTakeAllyPiece(iPiece current, iPiece target)
         {
             bool color = (int)current.getId() > 6;
@@ -273,14 +304,5 @@ namespace ChessProject3
             return !(color ^ color2);
         }
 
-        //TupleList<int,int> filterPieceTakeAllyPiece(TupleList<int,int> list)
-        //{
-            //foreach(Tuple<int,int> i in list)
-            //{
-                //if(pieceTakeAllyPiece())
-            //}
-
-            //return 
-        //}
     }
 }

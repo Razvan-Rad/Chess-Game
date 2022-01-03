@@ -92,27 +92,43 @@ namespace ChessProject3
             board.setTile(3, 7, ePiece.kingW);
             board.setTile(4, 3, ePiece.queenW);
         }
-        bool isSpecialMove()
+       public List<Tuple<int, int>> getAllSpecialMoves(int x, int y)
         {
-            return true;
+            var specialMoveset = board.getTile(x, y).getSpecialMoveList(x, y);
+            
+            return filterSpecial(x,y,specialMoveset);
         }
-        public bool movePiece(int oldX, int oldY, int newX, int newY)
+        public List<Tuple<int, int>> getAllMoves(int x, int y) //EXCEPT SPECIAL
         {
+            //3
+            var moveset = getNormalMovesFiltered(x, y);
+            var current = board.getTile(x, y);
 
-            if (ValidMoves(oldX, oldY, newX, newY).Count >0)
+
+            var specialMoveset = getAllSpecialMoves(x, y);
+
+            if(specialMoveset != null)
             {
-                if (isSpecialMove())
-                {
-                    board.moveTileSpecial(oldX, oldY, newX, newY);
-                }
-                else
-                {
-                    board.moveTile(oldX, oldY, newX, newY);
-
-                }
-                return true;
+                moveset.AddRange(specialMoveset);
             }
-            return false;
+            return moveset;
+        }
+        public void movePiece(int x, int y, int newX, int newY)
+        {
+            //2
+
+            var moveset = getAllMoves(x, y); //EXCEPT SPECIAL
+            var specialMoveset = getAllSpecialMoves(x, y);
+            var target = Tuple.Create(newX, newY);
+            if (moveset.Contains(target))
+            {
+                board.moveTile(x, y, newX, newY);
+            }
+            else if(specialMoveset.Contains(target))
+            {
+                board.getTile(x, y).setSpecialMove(false);
+                board.moveTile(x, y, newX, newY);
+            }
         }
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
@@ -168,7 +184,7 @@ namespace ChessProject3
             }
             return false;
         }
-        void filterAnythingInTheWay(int oldX, int oldY, ref List<Tuple<int,int>> list)
+        List<Tuple<int, int>> filterAnythingInTheWay(int oldX, int oldY, List<Tuple<int,int>> list)
         {
             List<Tuple<int,int>> toRemove = new List<Tuple<int,int>>();
             iPiece current = board.getTile(oldX, oldY);
@@ -193,47 +209,37 @@ namespace ChessProject3
                 }
             }
 
-            list = list.Except(toRemove).ToList();
+            return list.Except(toRemove).ToList();
         }
-
-        public List<Tuple<int,int>> getValidMoves(int x, int y, int dx, int dy, bool enableFilters = false)
+        List<Tuple<int, int>> filterSpecial(int x, int y, List<Tuple<int, int>> list)
         {
-            List<Tuple<int,int>> moveset = new List<Tuple<int,int>>();
-            List<Tuple<int, int>> movesetDynamic;
-            List<Tuple<int, int>> movesetStatic;
-
-            iPiece current = board.getTile(x, y);
-            iPiece target = board.getTile(dx, dy);
-
-            // filter static
-            movesetStatic = current.getUnfilteredStatic(x, y);
-            if(movesetStatic != null)
+            List<Tuple<int,int>>moveset = new List<Tuple<int, int>>();
+            if (list != null)
             {
-                moveset.AddRange(movesetStatic);
-            }
-
-            // filter dynamic
-            movesetDynamic = current.getUnfilteredDynamic(x, y);
-            if(movesetDynamic != null)
-            {
-                movesetDynamic = filterDynamic(current, movesetDynamic);
-                moveset.AddRange(movesetDynamic);
-            }
-
-            //other filters
-            if (enableFilters)
-            {
-                //moves are within bounds now
-                if (target != null)
+                var current = board.getTile(x, y);
+                //COPY PASTED, CARE
+                List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
+                if (current.isSameAs(ePiece.pawnW))
                 {
-                    filterPieceTakeAllyPiece(current,ref moveset);
-                }
-               filterAnythingInTheWay(x, y,ref moveset);
-                //// after move, is there check?
-                //if (isCheck()) ret = false;
+                    foreach (Tuple<int, int> piece in list)
+                    {
+                        iPiece target = board.getTile(piece.Item1, piece.Item2);
 
+                        //2 move
+                        if (target == null)
+                        {
+                        }
+                        else
+                        {
+                            toRemove.Add(piece);
+                        }
+                    }
+                }
+                moveset =  list.Except(toRemove).ToList();
             }
-            return moveset;
+
+            return filterPieceTakeAllyPiece(x, y, moveset);
+          
         }
         List<Tuple<int,int>> filterDynamic(iPiece current, List<Tuple<int,int>> list)
         {
@@ -252,25 +258,45 @@ namespace ChessProject3
             }
             return list.Except(toRemove).ToList();
         }
-        List<Tuple<int,int>> ValidMoves(int oldX, int oldY, int newX, int newY)
+
+        public List<Tuple<int,int>> getNormalMovesFiltered(int x, int y)
         {
-            iPiece current = board.getTile(oldX, oldY);
-            iPiece target = board.getTile(newX, newY);
-            List<Tuple<int,int>> moveset = getValidMoves(oldX, oldY, newX, newY);
-            if (moveset != null)
+            List<Tuple<int, int>> moveset = new List<Tuple<int, int>>();
+            List<Tuple<int, int>> movesetDynamic;
+            List<Tuple<int, int>> movesetStatic;
+
+            iPiece current = board.getTile(x, y);
+
+            // filter static
+            movesetStatic = current.getUnfilteredStatic(x, y);
+            if (movesetStatic != null)
             {
-                filterReachableSquares(oldX, oldY, newX, newY, moveset);
-          
+                moveset.AddRange(movesetStatic);
             }
+
+            // filter dynamic
+            movesetDynamic = current.getUnfilteredDynamic(x, y);
+            if (movesetDynamic != null)
+            {
+                movesetDynamic = filterDynamic(current, movesetDynamic);
+                if (movesetDynamic != null)
+                {
+                    moveset.AddRange(movesetDynamic);
+                }
+            }
+            moveset = filterPieceTakeAllyPiece(x,y, moveset);
+            moveset = filterAnythingInTheWay(x, y, moveset);
+                //// after move, is there check?
+                //if (isCheck()) ret = false;
             return moveset;
         }
-        bool filterReachableSquares(int oldX, int oldY, int newX, int newY, List<Tuple<int,int>> moveset)
+        bool isSquareReachable(int oldX, int oldY, int newX, int newY, List<Tuple<int,int>> moveset)
         {
             foreach (Tuple<int, int> element in moveset)
             {
-                if (element.Item1 == newX && element.Item2 == newY) return false;
+                if (element.Item1 == newX && element.Item2 == newY)return true;
             }
-            return true;
+            return false;
         }
         bool isCheck()
         {
@@ -322,8 +348,9 @@ namespace ChessProject3
             }
             return list;
         }
-        void filterPieceTakeAllyPiece(iPiece current, ref List<Tuple<int,int>> list)
+        List<Tuple<int,int>> filterPieceTakeAllyPiece(int x, int y,  List<Tuple<int,int>> list)
         {
+            var current = board.getTile(x, y);  
             List<Tuple<int,int>> toRemove = new List<Tuple<int,int>>();
             foreach (Tuple<int, int> element in list)
             {
@@ -336,7 +363,7 @@ namespace ChessProject3
                     }
                 }
             }
-         list =  list.Except(toRemove).ToList();
+         return list.Except(toRemove).ToList();
         }
         bool pieceTakeAllyPiece(iPiece current, iPiece target)
         {

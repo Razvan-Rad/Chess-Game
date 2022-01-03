@@ -8,11 +8,11 @@ namespace ChessProject3
 {
     class Pawn : iPiece
     {
-        bool specialMove = true;
         protected override void init()
         {
             dynamicMoveSet = true;
             staticMoveSet = true;
+            this.setSpecialMove(true);
 
             moves = new List<Tuple<int, int>>();
             if (this.getId() == ePiece.pawnB)
@@ -47,7 +47,8 @@ namespace ChessProject3
 
             return newMoves;
         }
-        protected override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool resetMove = true)
+
+        public override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool resetMove = true)
         {
             List<Tuple<int, int>> newMoves = new List<Tuple<int, int>>();
 
@@ -62,10 +63,6 @@ namespace ChessProject3
 
             }
             return newMoves;
-        }
-        void disableSpecialMove()
-        {
-            specialMove = false;
         }
         public Pawn(bool isBlack = false)
         {

@@ -36,6 +36,12 @@ namespace ChessProject3
     {
         public bool dynamicMoveSet = false;
         public bool staticMoveSet = false;
+        protected bool specialMoveSet = false;
+        bool specialMove = false;
+        public void setSpecialMove(bool set)
+        {
+            specialMove = set;
+        }
         ePiece id = ePiece.none;
         public bool isSameAs(ePiece piece)
         {
@@ -49,7 +55,7 @@ namespace ChessProject3
         {
             if (staticMoveSet)
             {
-                return staticToDynamic(pieceX, pieceY, getStaticMoveList());
+                return filterBounds(pieceX,pieceY,staticToDynamic(pieceX, pieceY, getStaticMoveList()));
             }
             return null;
         }
@@ -95,7 +101,7 @@ namespace ChessProject3
         }
        
         protected abstract List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true);
-        protected abstract List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true);
+        public abstract List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true);
         public List<Tuple<int,int>> getStaticMoveList() => moves;
 
        

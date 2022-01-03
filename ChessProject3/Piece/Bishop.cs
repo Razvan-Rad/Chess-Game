@@ -29,6 +29,9 @@ namespace ChessProject3
             init();
         }
 
-
+        protected override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

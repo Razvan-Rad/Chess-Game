@@ -34,5 +34,9 @@ namespace ChessProject3
             else this.setId(ePiece.kingW);
             init();
         }
+        protected override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

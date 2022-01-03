@@ -48,6 +48,12 @@ namespace ChessProject3
             tile[oldX, oldY] = null;    
 
         }
+        public void moveTileSpecial(int oldX, int oldY, int newX, int newY)
+        {
+            tile[newX, newY] = tile[oldX, oldY];
+            tile[oldX, oldY] = null;
+
+        }
         public void setTile(int x, int y, ePiece val)
         {
             tile[x, y] = pieceMap[(int)val];

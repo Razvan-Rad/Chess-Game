@@ -92,12 +92,24 @@ namespace ChessProject3
             board.setTile(3, 7, ePiece.kingW);
             board.setTile(4, 3, ePiece.queenW);
         }
+        bool isSpecialMove()
+        {
+            return true;
+        }
         public bool movePiece(int oldX, int oldY, int newX, int newY)
         {
 
-            if (canMove(oldX, oldY, newX, newY))
+            if (ValidMoves(oldX, oldY, newX, newY).Count >0)
             {
-                board.moveTile(oldX, oldY, newX, newY);
+                if (isSpecialMove())
+                {
+                    board.moveTileSpecial(oldX, oldY, newX, newY);
+                }
+                else
+                {
+                    board.moveTile(oldX, oldY, newX, newY);
+
+                }
                 return true;
             }
             return false;
@@ -186,42 +198,71 @@ namespace ChessProject3
 
         public List<Tuple<int,int>> getValidMoves(int x, int y, int dx, int dy, bool enableFilters = false)
         {
-            List<Tuple<int,int>> ret;
+            List<Tuple<int,int>> moveset = new List<Tuple<int,int>>();
+            List<Tuple<int, int>> movesetDynamic;
+            List<Tuple<int, int>> movesetStatic;
 
             iPiece current = board.getTile(x, y);
             iPiece target = board.getTile(dx, dy);
 
-            ret = current.getUnfilteredMoves(x, y);
+            // filter static
+            movesetStatic = current.getUnfilteredStatic(x, y);
+            if(movesetStatic != null)
+            {
+                moveset.AddRange(movesetStatic);
+            }
+
+            // filter dynamic
+            movesetDynamic = current.getUnfilteredDynamic(x, y);
+            if(movesetDynamic != null)
+            {
+                movesetDynamic = filterDynamic(current, movesetDynamic);
+                moveset.AddRange(movesetDynamic);
+            }
+
+            //other filters
             if (enableFilters)
             {
                 //moves are within bounds now
                 if (target != null)
                 {
-                    filterPieceTakeAllyPiece(current,ref ret);
+                    filterPieceTakeAllyPiece(current,ref moveset);
                 }
-               filterAnythingInTheWay(x, y,ref ret);
+               filterAnythingInTheWay(x, y,ref moveset);
                 //// after move, is there check?
                 //if (isCheck()) ret = false;
 
             }
-            return ret;
+            return moveset;
         }
-
-        bool canMove(int oldX, int oldY, int newX, int newY)
+        List<Tuple<int,int>> filterDynamic(iPiece current, List<Tuple<int,int>> list)
+        {
+            List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
+            if (current.isSameAs(ePiece.pawnW))
+            {
+                foreach(Tuple<int,int> piece in list)
+                {
+                    iPiece target = board.getTile(piece.Item1, piece.Item2);
+                   
+                    if (target == null ||pieceTakeAllyPiece(current, target))
+                    {
+                        toRemove.Add(piece);
+                    }
+                }
+            }
+            return list.Except(toRemove).ToList();
+        }
+        List<Tuple<int,int>> ValidMoves(int oldX, int oldY, int newX, int newY)
         {
             iPiece current = board.getTile(oldX, oldY);
             iPiece target = board.getTile(newX, newY);
-            bool ret = false;
             List<Tuple<int,int>> moveset = getValidMoves(oldX, oldY, newX, newY);
             if (moveset != null)
             {
                 filterReachableSquares(oldX, oldY, newX, newY, moveset);
-                if(moveset.Count > 0)
-                {
-                    ret = true;
-                }
+          
             }
-            return ret;
+            return moveset;
         }
         bool filterReachableSquares(int oldX, int oldY, int newX, int newY, List<Tuple<int,int>> moveset)
         {
@@ -289,7 +330,7 @@ namespace ChessProject3
                 iPiece target = board.getTile(element.Item1, element.Item2);
                 if (target != null)
                 {
-                    if (pieceTakeAllyPiece(current, target))
+                    if (pieceTakeAllyPiece(current,target))
                     {
                         toRemove.Add(element);
                     }
@@ -299,9 +340,7 @@ namespace ChessProject3
         }
         bool pieceTakeAllyPiece(iPiece current, iPiece target)
         {
-            bool color = (int)current.getId() > 6;
-            bool color2 = (int)target.getId() > 6;
-            return !(color ^ color2);
+            return !((int)current.getId() > 6 ^ (int)target.getId() > 6);
         }
 
     }

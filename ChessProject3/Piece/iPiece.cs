@@ -34,8 +34,8 @@ namespace ChessProject3
 
     public abstract class iPiece
     {
-        protected bool dynamicMoveSet = false;
-        protected bool staticMoveSet = false;
+        public bool dynamicMoveSet = false;
+        public bool staticMoveSet = false;
         ePiece id = ePiece.none;
         public bool isSameAs(ePiece piece)
         {
@@ -45,44 +45,57 @@ namespace ChessProject3
         protected void setId(ePiece id) => this.id = id;
         protected List<Tuple<int,int>> moves { get; set; }
         protected abstract void init();
-        public List<Tuple<int,int>> getUnfilteredMoves(int pieceX, int pieceY)
+        public List<Tuple<int, int>> getUnfilteredStatic(int pieceX, int pieceY)
         {
-            List<Tuple<int,int>> list = new List<Tuple<int,int>>();
             if (staticMoveSet)
             {
-                List<Tuple<int,int>> staticMoves = filterStaticBounds(pieceX, pieceY, getStaticMoveList());
-                list.AddRange(staticMoves);
+                return staticToDynamic(pieceX, pieceY, getStaticMoveList());
             }
-            if(dynamicMoveSet)
-            {
-                List<Tuple<int,int>> dynamicMoves = getDynamicMoveList(pieceX, pieceY);
-                list.AddRange(dynamicMoves);
-            }
-            return list;
+            return null;
         }
-        List<Tuple<int,int>> filterStaticBounds(int pieceX, int pieceY, List<Tuple<int,int>>mv)
+        public List<Tuple<int, int>> getUnfilteredDynamic(int pieceX, int pieceY)
         {
-            List<Tuple<int,int>> ret = new List<Tuple<int,int>>();
-            for (int i = 0; i < mv.Count; i++)   //THIS IS NOT COPIED
+            if (dynamicMoveSet)
             {
-                int offsetX = mv[i].Item1;
-                int offsetY = mv[i].Item2;
-
-                int destX = pieceX + offsetX;
-                int destY = pieceY + offsetY;
+                return filterBounds(pieceX,pieceY,getDynamicMoveList(pieceX, pieceY));
+            }
+            return null;
+        }
+        List<Tuple<int, int>> filterBounds(int pieceX, int pieceY, List<Tuple<int, int>> mv)
+        {
+            List<Tuple<int, int>> ret = new List<Tuple<int, int>>();
+            foreach (var move in mv)
+            {
+                var destX = move.Item1;
+                var destY = move.Item2;
 
                 if (destX < 8 && destY < 8 &&
                  destX >= 0 && destY >= 0)
                 {
-
-                    Tuple<int, int> move = Tuple.Create(destX, destY);
                     ret.Add(move);
                 }
-
             }
             return ret;
         }
-        protected abstract List<Tuple<int,int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true);
+
+        List<Tuple<int, int>> staticToDynamic(int pieceX, int pieceY, List<Tuple<int, int>> mv)
+        {
+            List<Tuple<int, int>> ret = new List<Tuple<int, int>>();
+            foreach (var move in mv)
+            {
+                int offsetX = move.Item1;
+                int offsetY = move.Item2;
+
+                int destX = pieceX + offsetX;
+                int destY = pieceY + offsetY;
+                
+                ret.Add(Tuple.Create(destX, destY));
+            }
+            return ret;
+        }
+       
+        protected abstract List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true);
+        protected abstract List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true);
         public List<Tuple<int,int>> getStaticMoveList() => moves;
 
        

@@ -8,39 +8,64 @@ namespace ChessProject3
 {
     class Pawn : iPiece
     {
-        bool firstMove = true;
+        bool specialMove = true;
         protected override void init()
         {
             dynamicMoveSet = true;
+            staticMoveSet = true;
+
+            moves = new List<Tuple<int, int>>();
+            if (this.getId() == ePiece.pawnB)
+            {
+                moves.Add(Tuple.Create(0, 1));
+            }
+            else
+            {
+                moves.Add(Tuple.Create(0, -1));
+            }
         }
         protected override List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool resetMove = true)
         {
             List<Tuple<int, int>> newMoves;
             if (this.getId() == ePiece.pawnB)
             {
-                newMoves = new List<Tuple<int, int>> { Tuple.Create(pieceX, pieceY + 1) };
-                if (firstMove)
-                {
-                    newMoves.Add(Tuple.Create(pieceX, pieceY + 2));
-                }
+                newMoves = new List<Tuple<int, int>> {
+                    
+                    Tuple.Create(pieceX +1, pieceY + 1),
+                    Tuple.Create(pieceX -1, pieceY + 1)
+
+                };
             }
             else
             {
-                newMoves = new List<Tuple<int, int>> { Tuple.Create(pieceX, pieceY - 1) };
-                if (firstMove)
-                {
-                    newMoves.Add(Tuple.Create(pieceX, pieceY - 2));
-                }
+                newMoves = new List<Tuple<int, int>> {
+                    Tuple.Create(pieceX +1, pieceY - 1),
+                    Tuple.Create(pieceX -1, pieceY - 1)
 
-            }
-            moves = newMoves;
-
-            if (resetMove)
-            {
-                firstMove = false;
+                };
             }
 
             return newMoves;
+        }
+        protected override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool resetMove = true)
+        {
+            List<Tuple<int, int>> newMoves = new List<Tuple<int, int>>();
+
+            if (this.getId() == ePiece.pawnB)
+            {
+
+                newMoves.Add(Tuple.Create(pieceX, pieceY + 2));
+            }
+            else
+            {
+                newMoves.Add(Tuple.Create(pieceX, pieceY - 2));
+
+            }
+            return newMoves;
+        }
+        void disableSpecialMove()
+        {
+            specialMove = false;
         }
         public Pawn(bool isBlack = false)
         {

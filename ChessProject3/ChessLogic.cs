@@ -61,36 +61,36 @@ namespace ChessProject3
         }
         void initPiecesDefault()
         {
+            bool black = true;
             for (int i = 0; i < 8; i++)
             {
                 Console.WriteLine(i);
-                board.setTile(i, 1, ePiece.pawnB);
-                board.setTile(i, 6, ePiece.pawnW);
+                board.getTile(i, 1) = new Pawn(true);
+                board.getTile(i, 6) = new Pawn();
             }
+            board.getTile(0, 0)= new Rook(black);
+            board.getTile(7, 0)= new Rook(black);
 
-            board.setTile(0, 0, ePiece.rookB);
-            board.setTile(7, 0, ePiece.rookB);
+            board.getTile(0, 7)= new Rook();
+            board.getTile(7, 7)= new Rook();
 
-            board.setTile(0, 7, ePiece.rookW);
-            board.setTile(7, 7, ePiece.rookW);
+            board.getTile(1, 0)= new Horse(black);
+            board.getTile(6, 0)= new Horse(black);
 
-            board.setTile(1, 0, ePiece.horseB);
-            board.setTile(6, 0, ePiece.horseB);
+            board.getTile(1, 7)= new Horse();
+            board.getTile(6, 7)= new Horse();
 
-            board.setTile(1, 7, ePiece.horseW);
-            board.setTile(6, 7, ePiece.horseW);
+            board.getTile(2, 0)= new Bishop(black);
+            board.getTile(5, 0)= new Bishop(black);
 
-            board.setTile(2, 0, ePiece.bishopB);
-            board.setTile(5, 0, ePiece.bishopB);
+            board.getTile(2, 7)= new Bishop();
+            board.getTile(5, 7)= new Bishop();
 
-            board.setTile(2, 7, ePiece.bishopW);
-            board.setTile(5, 7, ePiece.bishopW);
+            board.getTile(3, 0)= new King(black);
+            board.getTile(4, 0)= new Queen(black);
 
-            board.setTile(3, 0, ePiece.kingB);
-            board.setTile(4, 0, ePiece.queenB);
-
-            board.setTile(3, 7, ePiece.kingW);
-            board.setTile(4, 3, ePiece.queenW);
+            board.getTile(3, 7)= new King();
+            board.getTile(4, 3)= new Queen();
         }
         public List<Tuple<int, int>> getAllSpecialMoves(int x, int y)
         {
@@ -125,7 +125,7 @@ namespace ChessProject3
             }
             else if (special.Contains(target))
             {
-                board.getTile(x, y).setSpecialMove(false);
+                board.tile[x, y].specialMoveSet = false;
                 board.moveTile(x, y, newX, newY);
                 ret = true;
             }

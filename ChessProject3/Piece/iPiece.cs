@@ -25,18 +25,11 @@ namespace ChessProject3
 
         none = 0
     }
-
-
-    public class TupleList<T1, T2> : List<Tuple<T1, T2>>
-    {
-    
-    }
-
     public abstract class iPiece
     {
         public bool dynamicMoveSet = false;
         public bool staticMoveSet = false;
-        protected bool specialMoveSet = false;
+        public bool specialMoveSet = false;
         public void setSpecialMove(bool set)
         {
             specialMoveSet = set;

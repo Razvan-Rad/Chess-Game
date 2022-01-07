@@ -31,7 +31,6 @@ namespace ChessProject3
         }
         public void clickTile(int x, int y)
         {
-            //1
             if (alreadySelectedASquare) //Select where to move to
             {
                 if (!isSamePiece(x, y) && game.movePiece(selectedPiece.X, selectedPiece.Y, x, y))

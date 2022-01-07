@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
 using System.Windows.Forms;
 namespace ChessProject3
 {
@@ -6,7 +9,7 @@ namespace ChessProject3
     {
         Board board;
         bool alreadySelectedASquare = false;
-        Point selectedPiece;
+        Point selected;
         PanelPainter painter;
         ChessLogic game;
         public ChessGame(Panel p, int maxX, int maxY)
@@ -23,29 +26,32 @@ namespace ChessProject3
             painter.drawAllPieces();
 
             //post init
-
         }
         bool isSamePiece(int x, int y)
         {
-            return x == selectedPiece.X && y == selectedPiece.Y;
+            return x == selected.X && y == selected.Y;
         }
+
+        List<move> pastMoves = new List<move>();
         public void clickTile(int x, int y)
         {
             if (alreadySelectedASquare) //Select where to move to
             {
-                if (!isSamePiece(x, y) && game.movePiece(selectedPiece.X, selectedPiece.Y, x, y))
+                if (!isSamePiece(x, y) && game.movePiece(selected.X, selected.Y, x, y))
                 {
+                    move mv = new move(x, y, selected.X, selected.Y);
+                    pastMoves.Add(mv);
                     game.round++;
                 }
                 alreadySelectedASquare = false;
-                selectedPiece = new Point(x, y);
+                selected = new Point(x, y);
                 painter.draw(true);
             }
             else //Select first piece
             {
                 if (game.squareSelectionSuccess(x, y))
                 {
-                    selectedPiece = new Point(x, y);
+                    selected = new Point(x, y);
                     //Drawing range
                     alreadySelectedASquare = true;
                     painter.paintRange(game.getAllMoves(x, y));

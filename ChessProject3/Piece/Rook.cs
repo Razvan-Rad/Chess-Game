@@ -11,6 +11,7 @@ namespace ChessProject3
         protected override void init()
         {
             dynamicMoveSet = true;
+            specialMoveSet = true;
         }
 
         protected override List<Tuple<int,int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
@@ -31,12 +32,6 @@ namespace ChessProject3
         }
         public override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
-            if(specialMoveSet)
-            {
-
-                throw new NotImplementedException();
-
-            }
             return null;
         }
 

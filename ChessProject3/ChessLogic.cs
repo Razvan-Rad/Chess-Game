@@ -8,6 +8,20 @@ using System.Drawing;
 
 namespace ChessProject3
 {
+    struct move
+    {
+        public move(int x, int y, int dx, int dy)
+        {
+            this.x = x;
+            this.y = y;
+            this.dx = dx;
+            this.dy = dy;
+        }
+        public int x;
+        public int y;
+        public int dx;
+        public int dy;
+    }
     class ChessLogic
     {
         Board board;
@@ -68,29 +82,28 @@ namespace ChessProject3
                 board.getTile(i, 1) = new Pawn(true);
                 board.getTile(i, 6) = new Pawn();
             }
-            board.getTile(0, 0)= new Rook(black);
-            board.getTile(7, 0)= new Rook(black);
+            board.getTile(0, 0) = new Rook(black);
+            board.getTile(7, 0) = new Rook(black);
+            board.getTile(1, 3) = new Horse(black);
+            board.getTile(6, 3) = new Horse(black);
+            board.getTile(2, 3) = new Bishop(black);
+            board.getTile(5, 3) = new Bishop(black);
+            board.getTile(3, 0) = new King(black);
+            board.getTile(4, 3) = new Queen(black);
 
-            board.getTile(0, 7)= new Rook();
-            board.getTile(7, 7)= new Rook();
 
-            board.getTile(1, 0)= new Horse(black);
-            board.getTile(6, 0)= new Horse(black);
+            board.getTile(0, 7) = new Rook();
+            board.getTile(7, 7) = new Rook();
 
-            board.getTile(1, 7)= new Horse();
-            board.getTile(6, 7)= new Horse();
 
-            board.getTile(2, 0)= new Bishop(black);
-            board.getTile(5, 0)= new Bishop(black);
+            board.getTile(1, 7) = new Horse();
+            board.getTile(6, 7) = new Horse();
 
-            board.getTile(2, 7)= new Bishop();
-            board.getTile(5, 7)= new Bishop();
+            board.getTile(2, 7) = new Bishop();
+            board.getTile(5, 7) = new Bishop();
 
-            board.getTile(3, 0)= new King(black);
-            board.getTile(4, 0)= new Queen(black);
-
-            board.getTile(3, 7)= new King();
-            board.getTile(4, 3)= new Queen();
+            board.getTile(3, 7) = new King();
+            board.getTile(4, 3) = new Queen();
         }
         public List<Tuple<int, int>> getAllSpecialMoves(int x, int y)
         {
@@ -99,9 +112,6 @@ namespace ChessProject3
         }
         public List<Tuple<int, int>> getAllMoves(int x, int y) //EXCEPT SPECIAL
         {
-            //3
-            var current = board.getTile(x, y);
-
             var moveset = getAllNormalMoves(x, y);
             var specialMoveset = getAllSpecialMoves(x, y);
 
@@ -111,21 +121,47 @@ namespace ChessProject3
             }
             return moveset;
         }
+
         public bool movePiece(int x, int y, int newX, int newY)
         {
-            List<Tuple<int, int>> special = getAllNormalMoves(x,y);
-            List<Tuple<int, int>> normal = getAllSpecialMoves(x,y);
+            List<Tuple<int, int>> normal = getAllNormalMoves(x, y);
+            List<Tuple<int, int>> special = getAllSpecialMoves(x, y);
             var target = Tuple.Create(newX, newY);
-            
-            if (normal.Contains(target) || special.Contains(target))
+            var targetPiece = board.getTile(x, y);
+
+            if (normal.Contains(target))
             {
                 board.tile[x, y].specialMoveSet = false;
                 board.moveTile(x, y, newX, newY);
+                
                 return true;
+            }
+
+            if (special.Contains(target))
+            {
+                board.tile[x, y].specialMoveSet = false;
+                board.moveTile(x, y, newX, newY);
+                if (targetPiece.isSameAs(ePiece.kingW))
+                {
+                    //newX-1 = right hand side move
+                    int dx = x < newX ? newX - 1 : newX + 1;
+                    int sx = dx == newX - 1 ? 7 : 0;
+                    var targetRook = board.getTile(sx, y);
+
+
+                    if (targetRook != null)
+                    {
+                        if (targetRook.isSameAs(ePiece.rookW) && targetRook.specialMoveSet)
+                        {
+                            board.moveTile(sx, y, dx, newY);
+                            return true;
+                        }
+                    }
+                }
             }
             return false;
         }
-       
+
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
             int iterX = (oldX < newX) ? oldX : newX;
@@ -188,7 +224,8 @@ namespace ChessProject3
             {
                 int newX = element.Item1;
                 int newY = element.Item2;
-                if (current.isSameAs(ePiece.rookW) &&  anythingInTheWayRook(x, y, newX, newY))
+
+                if (current.isSameAs(ePiece.rookW) && anythingInTheWayRook(x, y, newX, newY))
                 {
                     toRemove.Add(element);
                 }
@@ -204,10 +241,17 @@ namespace ChessProject3
                 {
                     toRemove.Add(element);
                 }
-
-                else if (current.isSameAs(ePiece.pawnW) )
+                else if (current.getId() == ePiece.pawnW)
                 {
-                    if (anythingInTheWayRook(x, y, newX, newY))
+                    if (anythingInTheWayRook(x, y, newX, newY - 1))
+                    {
+                        toRemove.Add(element);
+                    }
+                }
+
+                else if (current.getId() == ePiece.pawnB)
+                {
+                    if (anythingInTheWayRook(x, y, newX, newY + 1))
                     {
                         toRemove.Add(element);
                     }

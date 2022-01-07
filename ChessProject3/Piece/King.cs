@@ -11,7 +11,8 @@ namespace ChessProject3
         protected override void init()
         {
             staticMoveSet = true;
-            moves = new List<Tuple<int,int>>
+            specialMoveSet = true;
+            moves = new List<Tuple<int, int>>
                 {
                 Tuple.Create(0,1),
                 Tuple.Create(1,0),
@@ -24,7 +25,7 @@ namespace ChessProject3
                 Tuple.Create(-1,0)
                 };
         }
-        protected override List<Tuple<int,int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
+        protected override List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             throw new NotImplementedException();
         }
@@ -36,10 +37,14 @@ namespace ChessProject3
         }
         public override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
-            if(specialMoveSet)
+            if (specialMoveSet)
             {
+                List<Tuple<int, int>> newMoves = new List<Tuple<int, int>>();
 
-                throw new NotImplementedException();
+                newMoves.Add(Tuple.Create(pieceX + 2, pieceY));
+                newMoves.Add(Tuple.Create(pieceX - 2, pieceY));
+
+                return newMoves;
 
             }
             return null;

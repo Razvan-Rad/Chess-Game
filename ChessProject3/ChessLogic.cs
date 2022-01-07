@@ -92,43 +92,71 @@ namespace ChessProject3
             board.setTile(3, 7, ePiece.kingW);
             board.setTile(4, 3, ePiece.queenW);
         }
-       public List<Tuple<int, int>> getAllSpecialMoves(int x, int y)
+        public List<Tuple<int, int>> getAllSpecialMoves(int x, int y)
         {
             var specialMoveset = board.getTile(x, y).getSpecialMoveList(x, y);
-            
-            return filterSpecial(x,y,specialMoveset);
+            return filterSpecial(x, y, specialMoveset);
         }
         public List<Tuple<int, int>> getAllMoves(int x, int y) //EXCEPT SPECIAL
         {
             //3
-            var moveset = getNormalMovesFiltered(x, y);
             var current = board.getTile(x, y);
 
-
+            var moveset = getAllNormalMoves(x, y);
             var specialMoveset = getAllSpecialMoves(x, y);
 
-            if(specialMoveset != null)
+            if (specialMoveset != null)
             {
                 moveset.AddRange(specialMoveset);
             }
             return moveset;
         }
-        public void movePiece(int x, int y, int newX, int newY)
+        public bool movePiece(int x, int y, int newX, int newY)
         {
-            //2
-
-            var moveset = getAllMoves(x, y); //EXCEPT SPECIAL
-            var specialMoveset = getAllSpecialMoves(x, y);
+            bool ret = false;
+            List<Tuple<int, int>> special = getAllNormalMoves(x,y);
+            List<Tuple<int, int>> normal = getAllSpecialMoves(x,y);
             var target = Tuple.Create(newX, newY);
-            if (moveset.Contains(target))
+            
+            if (normal.Contains(target))
             {
                 board.moveTile(x, y, newX, newY);
+                ret = true;
             }
-            else if(specialMoveset.Contains(target))
+            else if (special.Contains(target))
             {
                 board.getTile(x, y).setSpecialMove(false);
                 board.moveTile(x, y, newX, newY);
+                ret = true;
             }
+            return ret;
+        }
+        bool anythingInTheWayCustom(int x, int y, int newX, int newY)
+        {
+            iPiece current = board.getTile(x, y);
+            iPiece target = board.getTile(newX, newY);
+            if (isWhiteOnTile(x, y))
+            {
+                if (newY == y - 1)
+                {
+                    if (target != null)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            else if (isBlackOnTile(x, y))
+            {
+                if (newY == y + 1)
+                {
+                    return true;
+                }
+            }
+            else
+            { while (true) { } }
+
+            return false;
         }
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
@@ -184,28 +212,37 @@ namespace ChessProject3
             }
             return false;
         }
-        List<Tuple<int, int>> filterAnythingInTheWay(int oldX, int oldY, List<Tuple<int,int>> list)
+        List<Tuple<int, int>> filterAnythingInTheWay(int x, int y, List<Tuple<int, int>> list)
         {
-            List<Tuple<int,int>> toRemove = new List<Tuple<int,int>>();
-            iPiece current = board.getTile(oldX, oldY);
+            List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
+            iPiece current = board.getTile(x, y);
             foreach (Tuple<int, int> element in list)
             {
                 int newX = element.Item1;
                 int newY = element.Item2;
-                if (current.isSameAs(ePiece.rookW) && anythingInTheWayRook(oldX, oldY, newX, newY))
+                if (current.isSameAs(ePiece.rookW) &&  anythingInTheWayRook(x, y, newX, newY))
                 {
                     toRemove.Add(element);
                 }
-                else if (current.isSameAs(ePiece.bishopW) && anythingInTheWayBishop(oldX, oldY, newX, newY))
+
+                else if (current.isSameAs(ePiece.bishopW) && anythingInTheWayBishop(x, y, newX, newY))
                 {
                     toRemove.Add(element);
                 }
-                else if (
-                    current.isSameAs(ePiece.queenW) &&
-                    anythingInTheWayRook(oldX, oldY, newX, newY) ||
-                    anythingInTheWayBishop(oldX, oldY, newX, newY))
+
+                else if (current.isSameAs(ePiece.queenW) &&
+                    anythingInTheWayRook(x, y, newX, newY) ||
+                    anythingInTheWayBishop(x, y, newX, newY))
                 {
                     toRemove.Add(element);
+                }
+
+                else if (current.isSameAs(ePiece.pawnW) )
+                {
+                    if (anythingInTheWayRook(x, y, newX, newY))
+                    {
+                        toRemove.Add(element);
+                    }
                 }
             }
 
@@ -213,7 +250,7 @@ namespace ChessProject3
         }
         List<Tuple<int, int>> filterSpecial(int x, int y, List<Tuple<int, int>> list)
         {
-            List<Tuple<int,int>>moveset = new List<Tuple<int, int>>();
+            List<Tuple<int, int>> moveset = new List<Tuple<int, int>>();
             if (list != null)
             {
                 var current = board.getTile(x, y);
@@ -235,22 +272,24 @@ namespace ChessProject3
                         }
                     }
                 }
-                moveset =  list.Except(toRemove).ToList();
+                moveset = list.Except(toRemove).ToList();
+                moveset = filterPieceTakeAllyPiece(x, y, moveset);
+                moveset = filterAnythingInTheWay(x, y, moveset);
             }
 
-            return filterPieceTakeAllyPiece(x, y, moveset);
-          
+            return moveset;
+
         }
-        List<Tuple<int,int>> filterDynamic(iPiece current, List<Tuple<int,int>> list)
+        List<Tuple<int, int>> filterDynamic(iPiece current, List<Tuple<int, int>> list)
         {
             List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
             if (current.isSameAs(ePiece.pawnW))
             {
-                foreach(Tuple<int,int> piece in list)
+                foreach (Tuple<int, int> piece in list)
                 {
                     iPiece target = board.getTile(piece.Item1, piece.Item2);
-                   
-                    if (target == null ||pieceTakeAllyPiece(current, target))
+
+                    if (target == null || pieceTakeAllyPiece(current, target))
                     {
                         toRemove.Add(piece);
                     }
@@ -259,7 +298,7 @@ namespace ChessProject3
             return list.Except(toRemove).ToList();
         }
 
-        public List<Tuple<int,int>> getNormalMovesFiltered(int x, int y)
+        public List<Tuple<int, int>> getAllNormalMoves(int x, int y)
         {
             List<Tuple<int, int>> moveset = new List<Tuple<int, int>>();
             List<Tuple<int, int>> movesetDynamic;
@@ -284,17 +323,18 @@ namespace ChessProject3
                     moveset.AddRange(movesetDynamic);
                 }
             }
-            moveset = filterPieceTakeAllyPiece(x,y, moveset);
+            moveset = filterPieceTakeAllyPiece(x, y, moveset);
             moveset = filterAnythingInTheWay(x, y, moveset);
-                //// after move, is there check?
-                //if (isCheck()) ret = false;
+
+            //// after move, is there check?
+            //if (isCheck()) ret = false;
             return moveset;
         }
-        bool isSquareReachable(int oldX, int oldY, int newX, int newY, List<Tuple<int,int>> moveset)
+        bool isSquareReachable(int oldX, int oldY, int newX, int newY, List<Tuple<int, int>> moveset)
         {
             foreach (Tuple<int, int> element in moveset)
             {
-                if (element.Item1 == newX && element.Item2 == newY)return true;
+                if (element.Item1 == newX && element.Item2 == newY) return true;
             }
             return false;
         }
@@ -302,9 +342,9 @@ namespace ChessProject3
         {
             return false;
         }
-        public static List<Tuple<int,int>> getDynamicBishopMoves(int pieceX, int pieceY)
+        public static List<Tuple<int, int>> getDynamicBishopMoves(int pieceX, int pieceY)
         {
-            List<Tuple<int,int>> list = new List<Tuple<int,int>>() { };
+            List<Tuple<int, int>> list = new List<Tuple<int, int>>() { };
             // Top Left to bottom right diagonal
             for (int i = pieceX, j = pieceY; i < 8 && j < 8; i++, j++)
             {
@@ -325,9 +365,9 @@ namespace ChessProject3
             }
             return list;
         }
-        public static List<Tuple<int,int>> getDynamicRookMoves(int pieceX, int pieceY)
+        public static List<Tuple<int, int>> getDynamicRookMoves(int pieceX, int pieceY)
         {
-            List<Tuple<int,int>> list = new List<Tuple<int,int>>() { };
+            List<Tuple<int, int>> list = new List<Tuple<int, int>>() { };
             //rook left to right
             for (int i = pieceX; i < 8; i++)
             {
@@ -348,22 +388,22 @@ namespace ChessProject3
             }
             return list;
         }
-        List<Tuple<int,int>> filterPieceTakeAllyPiece(int x, int y,  List<Tuple<int,int>> list)
+        List<Tuple<int, int>> filterPieceTakeAllyPiece(int x, int y, List<Tuple<int, int>> list)
         {
-            var current = board.getTile(x, y);  
-            List<Tuple<int,int>> toRemove = new List<Tuple<int,int>>();
+            var current = board.getTile(x, y);
+            List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
             foreach (Tuple<int, int> element in list)
             {
                 iPiece target = board.getTile(element.Item1, element.Item2);
                 if (target != null)
                 {
-                    if (pieceTakeAllyPiece(current,target))
+                    if (pieceTakeAllyPiece(current, target))
                     {
                         toRemove.Add(element);
                     }
                 }
             }
-         return list.Except(toRemove).ToList();
+            return list.Except(toRemove).ToList();
         }
         bool pieceTakeAllyPiece(iPiece current, iPiece target)
         {

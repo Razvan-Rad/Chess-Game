@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
-using System.Drawing;
 namespace ChessProject3
 {
     public class ChessGame
@@ -39,13 +34,12 @@ namespace ChessProject3
             //1
             if (alreadySelectedASquare) //Select where to move to
             {
-                if (!isSamePiece(x, y))
+                if (!isSamePiece(x, y) && game.movePiece(selectedPiece.X, selectedPiece.Y, x, y))
                 {
-                   game.movePiece(selectedPiece.X, selectedPiece.Y, x, y);
-                   game.round++;
+                    game.round++;
                 }
-                selectedPiece = new Point(x, y);
                 alreadySelectedASquare = false;
+                selectedPiece = new Point(x, y);
                 painter.draw(true);
             }
             else //Select first piece
@@ -54,11 +48,11 @@ namespace ChessProject3
                 {
                     selectedPiece = new Point(x, y);
                     //Drawing range
-                    var moves = game.getAllMoves(selectedPiece.X, selectedPiece.Y);
                     alreadySelectedASquare = true;
-                    painter.paintRange(moves);
+                    painter.paintRange(game.getAllMoves(x, y));
                 }
             }
+
         }
     }
 }

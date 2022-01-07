@@ -12,7 +12,7 @@ namespace ChessProject3
         {
             dynamicMoveSet = true;
             staticMoveSet = true;
-            this.setSpecialMove(true);
+            specialMoveSet = true;
 
             moves = new List<Tuple<int, int>>();
             if (this.getId() == ePiece.pawnB)
@@ -50,19 +50,26 @@ namespace ChessProject3
 
         public override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool resetMove = true)
         {
-            List<Tuple<int, int>> newMoves = new List<Tuple<int, int>>();
-
-            if (this.getId() == ePiece.pawnB)
+            if(specialMoveSet)
             {
 
-                newMoves.Add(Tuple.Create(pieceX, pieceY + 2));
-            }
-            else
-            {
-                newMoves.Add(Tuple.Create(pieceX, pieceY - 2));
+                List<Tuple<int, int>> newMoves = new List<Tuple<int, int>>();
+
+                if (this.getId() == ePiece.pawnB)
+                {
+
+                    newMoves.Add(Tuple.Create(pieceX, pieceY + 2));
+                }
+                else
+                {
+                    newMoves.Add(Tuple.Create(pieceX, pieceY - 2));
+
+                }
+
+                return newMoves;
 
             }
-            return newMoves;
+            return null;
         }
         public Pawn(bool isBlack = false)
         {

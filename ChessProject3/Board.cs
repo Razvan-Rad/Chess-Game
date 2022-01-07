@@ -38,10 +38,6 @@ namespace ChessProject3
         {
             return tile[x, y].getId();
         }
-        public void setTile(int x, int y, iPiece val)
-        {
-            tile[x,y] = val;
-        }
         public void moveTile(int oldX, int oldY, int newX, int newY)
         {
             tile[newX, newY] = tile[oldX, oldY];

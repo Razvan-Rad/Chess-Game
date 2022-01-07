@@ -37,10 +37,9 @@ namespace ChessProject3
         public bool dynamicMoveSet = false;
         public bool staticMoveSet = false;
         protected bool specialMoveSet = false;
-        bool specialMove = false;
         public void setSpecialMove(bool set)
         {
-            specialMove = set;
+            specialMoveSet = set;
         }
         ePiece id = ePiece.none;
         public bool isSameAs(ePiece piece)

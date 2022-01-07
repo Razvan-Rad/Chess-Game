@@ -113,51 +113,19 @@ namespace ChessProject3
         }
         public bool movePiece(int x, int y, int newX, int newY)
         {
-            bool ret = false;
             List<Tuple<int, int>> special = getAllNormalMoves(x,y);
             List<Tuple<int, int>> normal = getAllSpecialMoves(x,y);
             var target = Tuple.Create(newX, newY);
             
-            if (normal.Contains(target))
-            {
-                board.moveTile(x, y, newX, newY);
-                ret = true;
-            }
-            else if (special.Contains(target))
+            if (normal.Contains(target) || special.Contains(target))
             {
                 board.tile[x, y].specialMoveSet = false;
                 board.moveTile(x, y, newX, newY);
-                ret = true;
+                return true;
             }
-            return ret;
-        }
-        bool anythingInTheWayCustom(int x, int y, int newX, int newY)
-        {
-            iPiece current = board.getTile(x, y);
-            iPiece target = board.getTile(newX, newY);
-            if (isWhiteOnTile(x, y))
-            {
-                if (newY == y - 1)
-                {
-                    if (target != null)
-                    {
-                        return true;
-                    }
-                }
-
-            }
-            else if (isBlackOnTile(x, y))
-            {
-                if (newY == y + 1)
-                {
-                    return true;
-                }
-            }
-            else
-            { while (true) { } }
-
             return false;
         }
+       
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
             int iterX = (oldX < newX) ? oldX : newX;
@@ -329,14 +297,6 @@ namespace ChessProject3
             //// after move, is there check?
             //if (isCheck()) ret = false;
             return moveset;
-        }
-        bool isSquareReachable(int oldX, int oldY, int newX, int newY, List<Tuple<int, int>> moveset)
-        {
-            foreach (Tuple<int, int> element in moveset)
-            {
-                if (element.Item1 == newX && element.Item2 == newY) return true;
-            }
-            return false;
         }
         bool isCheck()
         {

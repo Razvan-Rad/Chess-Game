@@ -25,6 +25,8 @@ namespace ChessProject3
     class ChessLogic
     {
         Board board;
+        Tuple<int, int> wasEnPassant = null;
+        bool wasPromotion = true;
         bool running = true;
         public int round = 0;
         bool whiteRound() => round % 2 == 0;
@@ -125,7 +127,10 @@ namespace ChessProject3
             {
                 board.tile[x, y].specialMoveSet = false;
                 board.moveTile(x, y, newX, newY);
-
+                if (wasEnPassant != null)
+                {
+                    board.tile[wasEnPassant.Item1, wasEnPassant.Item2] = null;
+                }
                 return true;
             }
 
@@ -160,56 +165,56 @@ namespace ChessProject3
 
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
-            if (oldX != newX && oldY!=newY)
+            if (oldX != newX && oldY != newY)
             {
-            int startX;
-            int startY;
-            int multiplier;
-            int finalX;
-            int finalY;
-            if(oldX < newX)
-            {
-                startX = oldX;
-                finalX = newX;
-
-                startY = oldY;
-                finalY = newY;
-
-                if (oldY < newY)
+                int startX;
+                int startY;
+                int multiplier;
+                int finalX;
+                int finalY;
+                if (oldX < newX)
                 {
-                    multiplier = 1;
+                    startX = oldX;
+                    finalX = newX;
+
+                    startY = oldY;
+                    finalY = newY;
+
+                    if (oldY < newY)
+                    {
+                        multiplier = 1;
+                    }
+                    else
+                    {
+                        multiplier = -1;
+                    }
+
                 }
                 else
                 {
-                    multiplier = -1;
+                    startX = newX;
+                    startY = newY;
+                    finalX = oldX;
+                    finalY = oldY;
+                    if (oldY < newY)
+                    {
+                        multiplier = -1;
+                    }
+                    else
+                    {
+                        multiplier = 1;
+                    }
                 }
-
-            }
-            else
-            {
-                startX = newX;
-                startY = newY;
-                finalX = oldX;
-                finalY = oldY;
-                if (oldY < newY)
+                for (int i = startX + 1, j = startY + multiplier;
+                    i < finalX; i++, j += multiplier)
                 {
-                    multiplier = -1;
-                }
-                else
-                {
-                    multiplier = 1;
-                }
-            }
-            for(int i = startX+1, j=startY+multiplier; 
-                i < finalX; i++, j+=multiplier)
-            {
 
-                if (board.getTile(i, j) != null)
-                {
-                    return true;
-                }
+                    if (board.getTile(i, j) != null)
+                    {
+                        return true;
+                    }
 
-            }
+                }
             }
             return false;
         }
@@ -338,28 +343,26 @@ namespace ChessProject3
                 Move lastMove = pastMoves.Last();
                 iPiece lastMoveTarget = board.getTile(lastMove.dx, lastMove.dy);
 
-                if (lastMoveTarget != null)
-                {
-                    if (current.getId() == ePiece.pawnW &&
-                        lastMoveTarget.getId() == ePiece.pawnB)
-                    {
-                        if (lastMove.y == 1 && lastMove.dy == 3) // if target moved 2 down
-                        {
-                            if (mv.x == lastMove.dx + 1 || mv.x == lastMove.dx - 1)
-                            {
-                                board.tile[lastMove.dx, lastMove.dy] = null;
+                if (lastMoveTarget == null) return false;
 
-                                return true;
-                            }
+                if (current.getId() == ePiece.pawnW &&
+                    lastMoveTarget.getId() == ePiece.pawnB)
+                {
+                    if (lastMove.y == 1 && lastMove.dy == 3) // if target moved 2 down
+                    {
+                        if (dx == lastMove.dx)
+                        {
+                            wasEnPassant = new Tuple<int, int>(lastMove.x,lastMove.y);
+                            return true;
                         }
                     }
-                    else //else if copy above if
-                    {
+                }
+                else //else if copy above if
+                {
 
-                    }
                 }
             }
-
+            wasEnPassant = null;
             return false;
         }
         List<Tuple<int, int>> filterDynamic(int x, int y, List<Tuple<int, int>> list)
@@ -373,7 +376,9 @@ namespace ChessProject3
                     iPiece target = board.getTile(piece.Item1, piece.Item2);
 
                     if (filterEnPassant(x, y, piece.Item1, piece.Item2))
-                    { continue; }
+                    {
+                        continue;
+                    }
 
                     if (target == null)
                     {

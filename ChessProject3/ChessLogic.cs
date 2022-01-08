@@ -130,6 +130,7 @@ namespace ChessProject3
                 if (wasEnPassant != null)
                 {
                     board.tile[wasEnPassant.Item1, wasEnPassant.Item2] = null;
+                    wasEnPassant = null;
                 }
                 return true;
             }
@@ -352,17 +353,25 @@ namespace ChessProject3
                     {
                         if (dx == lastMove.dx)
                         {
-                            wasEnPassant = new Tuple<int, int>(lastMove.x,lastMove.y);
+                            wasEnPassant = new Tuple<int, int>(lastMove.dx,lastMove.dy);
                             return true;
                         }
                     }
                 }
-                else //else if copy above if
+                // BLACK SIDE EN PASSANT
+                else if(current.getId()== ePiece.pawnB && 
+                    lastMoveTarget.getId() == ePiece.pawnW)
                 {
-
+                    if (lastMove.y == 6 && lastMove.dy == 4) // if target moved 2 down
+                    {
+                        if (dx == lastMove.dx)
+                        {
+                            wasEnPassant = new Tuple<int, int>(lastMove.dx, lastMove.dy);
+                            return true;
+                        }
+                    }
                 }
             }
-            wasEnPassant = null;
             return false;
         }
         List<Tuple<int, int>> filterDynamic(int x, int y, List<Tuple<int, int>> list)

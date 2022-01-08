@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 namespace ChessProject3
@@ -32,22 +33,9 @@ namespace ChessProject3
             return x == selected.X && y == selected.Y;
         }
 
-        List<move> pastMoves = new List<move>();
         public void clickTile(int x, int y)
         {
-            if (alreadySelectedASquare) //Select where to move to
-            {
-                if (!isSamePiece(x, y) && game.movePiece(selected.X, selected.Y, x, y))
-                {
-                    move mv = new move(x, y, selected.X, selected.Y);
-                    pastMoves.Add(mv);
-                    game.round++;
-                }
-                alreadySelectedASquare = false;
-                selected = new Point(x, y);
-                painter.draw(true);
-            }
-            else //Select first piece
+            if (!alreadySelectedASquare) //Select first piece
             {
                 if (game.squareSelectionSuccess(x, y))
                 {
@@ -56,6 +44,21 @@ namespace ChessProject3
                     alreadySelectedASquare = true;
                     painter.paintRange(game.getAllMoves(x, y));
                 }
+            }
+            else //select 2nd piece
+            {
+                if (!isSamePiece(x, y) && game.movePiece(selected.X, selected.Y, x, y))
+                {
+                    selected = new Point(x, y);
+
+                    //post move
+                    game.round++;
+                    Move mv = new Move(x, y, selected.X, selected.Y);
+                    game.pastMoves.Add(mv);
+                }
+                alreadySelectedASquare = false;
+                painter.draw(true);
+               
             }
 
         }

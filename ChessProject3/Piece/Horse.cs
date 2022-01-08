@@ -32,11 +32,11 @@ namespace ChessProject3
             else this.setId(ePiece.horseW);
             init();
         }
-        protected override List<Tuple<int,int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
+        protected override List<Tuple<int,int>> parseDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             throw new NotImplementedException();
         }
-        public override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
+        public override List<Tuple<int, int>> parseSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             if (specialMoveSet)
             {

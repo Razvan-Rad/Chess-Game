@@ -8,9 +8,9 @@ using System.Drawing;
 
 namespace ChessProject3
 {
-    struct move
+    struct Move
     {
-        public move(int x, int y, int dx, int dy)
+        public Move(int x, int y, int dx, int dy)
         {
             this.x = x;
             this.y = y;
@@ -30,6 +30,7 @@ namespace ChessProject3
         bool whiteRound() => round % 2 == 0;
         public bool isRunning() => running;
 
+        public List<Move> pastMoves = new List<Move>();
         public ChessLogic(Board b)
         {
             board = b;
@@ -43,20 +44,13 @@ namespace ChessProject3
         bool isBlackOnTile(int x, int y) => !isTileEmpty(x, y) && ((int)board.ePiecegetTile(x, y) > 6);
         public bool squareSelectionSuccess(int x, int y)
         {
-            if (whiteRound())
+            if (whiteRound() && isWhiteOnTile(x, y))
             {
-                if (isWhiteOnTile(x, y))
-                {
-                    return true;
-                }
+                return true;
             }
-            else
+            if (!whiteRound() && isBlackOnTile(x, y))
             {
-                if (isBlackOnTile(x, y))
-                {
-                    return true;
-                }
-
+                return true;
             }
             return false;
         }
@@ -64,11 +58,9 @@ namespace ChessProject3
         {
             if (round % 2 == 0)
             {
-
             }
             else
             {
-
             }
             round++;
 
@@ -106,8 +98,8 @@ namespace ChessProject3
             board.getTile(4, 3) = new Queen();
         }
         public List<Tuple<int, int>> getAllSpecialMoves(int x, int y)
-        {
-            var specialMoveset = board.getTile(x, y).getSpecialMoveList(x, y);
+        {// parse -> filter -> get
+            var specialMoveset = board.getTile(x, y).parseSpecialMoveList(x, y);
             return filterSpecial(x, y, specialMoveset);
         }
         public List<Tuple<int, int>> getAllMoves(int x, int y) //EXCEPT SPECIAL
@@ -133,7 +125,7 @@ namespace ChessProject3
             {
                 board.tile[x, y].specialMoveSet = false;
                 board.moveTile(x, y, newX, newY);
-                
+
                 return true;
             }
 
@@ -164,17 +156,23 @@ namespace ChessProject3
 
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
-            int iterX = (oldX < newX) ? oldX : newX;
-            int finalX = (oldX > newX) ? oldX : newX;
-            int iterY = (oldY < newY) ? oldY : newY;
-            int finalY = (oldY > newY) ? oldY : newY;
-            for (int i = iterX + 1, j = iterY + 1; i < finalX && j < finalY; i++, j++)
+            var startX = oldX < newX ? oldX : newX;
+            var finishX = oldX > newX ? oldX : newX;
+
+            var startY = oldY;
+
+            int iterMultiplier;
+            if (startX == newX)
             {
-                if (board.getTile(i, j) != null)
-                {
-                    return true;
-                }
+                startY = newY;
+                iterMultiplier = newY < oldY ? -1 : 1;
             }
+            for(;startX !=)
+            //if (board.getTile(i, j) != null)
+            //{
+            //return true;
+            //}
+
             return false;
         }
         bool anythingInTheWayRook(int oldX, int oldY, int newX, int newY)
@@ -292,8 +290,42 @@ namespace ChessProject3
             return moveset;
 
         }
-        List<Tuple<int, int>> filterDynamic(iPiece current, List<Tuple<int, int>> list)
+        bool filterEnPassant(int x, int y, int dx, int dy)
         {
+            iPiece current = board.getTile(x, y);
+            Move mv = new Move(x, y, dx, dy);
+            if (pastMoves.Count > 0)
+            {
+                Move lastMove = pastMoves.Last();
+                iPiece target = board.getTile(lastMove.dx, lastMove.dy);
+
+                if (target != null)
+                {
+
+                    if (current.getId() == ePiece.pawnW &&
+                        target.getId() == ePiece.pawnB)
+                    {
+                        if (lastMove.y == 1 && lastMove.dy == 3) // if target moved 2 down
+                        {
+                            if (mv.x == lastMove.dx + 1 || mv.x == lastMove.dx - 1)
+                            {
+                                board.tile[lastMove.dx, lastMove.y] = null;
+                                return true;
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+
+            return false;
+        }
+        List<Tuple<int, int>> filterDynamic(int x, int y, List<Tuple<int, int>> list)
+        {
+            iPiece current = board.getTile(x, y);
             List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
             if (current.isSameAs(ePiece.pawnW))
             {
@@ -301,12 +333,18 @@ namespace ChessProject3
                 {
                     iPiece target = board.getTile(piece.Item1, piece.Item2);
 
-                    if (target == null || pieceTakeAllyPiece(current, target))
+                    if (filterEnPassant(x, y, piece.Item1, piece.Item2))
+                    { continue; }
+
+                    if (target == null ||
+                            pieceTakeAllyPiece(current, target))
                     {
                         toRemove.Add(piece);
                     }
                 }
             }
+
+
             return list.Except(toRemove).ToList();
         }
 
@@ -319,17 +357,17 @@ namespace ChessProject3
             iPiece current = board.getTile(x, y);
 
             // filter static
-            movesetStatic = current.getUnfilteredStatic(x, y);
+            movesetStatic = current.getBoundedStatic(x, y);
             if (movesetStatic != null)
             {
                 moveset.AddRange(movesetStatic);
             }
 
             // filter dynamic
-            movesetDynamic = current.getUnfilteredDynamic(x, y);
+            movesetDynamic = current.getBoundedDynamic(x, y);
             if (movesetDynamic != null)
             {
-                movesetDynamic = filterDynamic(current, movesetDynamic);
+                movesetDynamic = filterDynamic(x, y, movesetDynamic);
                 if (movesetDynamic != null)
                 {
                     moveset.AddRange(movesetDynamic);

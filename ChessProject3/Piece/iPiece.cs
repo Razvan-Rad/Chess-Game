@@ -43,19 +43,19 @@ namespace ChessProject3
         protected void setId(ePiece id) => this.id = id;
         protected List<Tuple<int,int>> moves { get; set; }
         protected abstract void init();
-        public List<Tuple<int, int>> getUnfilteredStatic(int pieceX, int pieceY)
+        public List<Tuple<int, int>> getBoundedStatic(int pieceX, int pieceY)
         {
             if (staticMoveSet)
             {
-                return filterBounds(pieceX,pieceY,staticToDynamic(pieceX, pieceY, getStaticMoveList()));
+                return filterBounds(pieceX,pieceY,staticToDynamic(pieceX, pieceY, parseStaticMoveList()));
             }
             return null;
         }
-        public List<Tuple<int, int>> getUnfilteredDynamic(int pieceX, int pieceY)
+        public List<Tuple<int, int>> getBoundedDynamic(int pieceX, int pieceY)
         {
             if (dynamicMoveSet)
             {
-                return filterBounds(pieceX,pieceY,getDynamicMoveList(pieceX, pieceY));
+                return filterBounds(pieceX,pieceY,parseDynamicMoveList(pieceX, pieceY));
             }
             return null;
         }
@@ -92,9 +92,9 @@ namespace ChessProject3
             return ret;
         }
        
-        protected abstract List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true);
-        public abstract List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true);
-        public List<Tuple<int,int>> getStaticMoveList() => moves;
+        protected abstract List<Tuple<int, int>> parseDynamicMoveList(int pieceX, int pieceY, bool firstMove = true);
+        public abstract List<Tuple<int, int>> parseSpecialMoveList(int pieceX, int pieceY, bool firstMove = true);
+        public List<Tuple<int,int>> parseStaticMoveList() => moves;
 
        
 

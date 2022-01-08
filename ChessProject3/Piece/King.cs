@@ -25,7 +25,7 @@ namespace ChessProject3
                 Tuple.Create(-1,0)
                 };
         }
-        protected override List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
+        protected override List<Tuple<int, int>> parseDynamicMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             throw new NotImplementedException();
         }
@@ -35,7 +35,7 @@ namespace ChessProject3
             else this.setId(ePiece.kingW);
             init();
         }
-        public override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
+        public override List<Tuple<int, int>> parseSpecialMoveList(int pieceX, int pieceY, bool firstMove = true)
         {
             if (specialMoveSet)
             {

@@ -24,7 +24,7 @@ namespace ChessProject3
                 moves.Add(Tuple.Create(0, -1));
             }
         }
-        protected override List<Tuple<int, int>> getDynamicMoveList(int pieceX, int pieceY, bool resetMove = true)
+        protected override List<Tuple<int, int>> parseDynamicMoveList(int pieceX, int pieceY, bool resetMove = true)
         {
             List<Tuple<int, int>> newMoves;
             if (this.getId() == ePiece.pawnB)
@@ -48,11 +48,10 @@ namespace ChessProject3
             return newMoves;
         }
 
-        public override List<Tuple<int, int>> getSpecialMoveList(int pieceX, int pieceY, bool resetMove = true)
+        public override List<Tuple<int, int>> parseSpecialMoveList(int pieceX, int pieceY, bool resetMove = true)
         {
             if(specialMoveSet)
             {
-
                 List<Tuple<int, int>> newMoves = new List<Tuple<int, int>>();
 
                 if (this.getId() == ePiece.pawnB)

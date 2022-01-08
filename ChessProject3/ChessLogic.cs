@@ -119,7 +119,7 @@ namespace ChessProject3
             List<Tuple<int, int>> normal = getAllNormalMoves(x, y);
             List<Tuple<int, int>> special = getAllSpecialMoves(x, y);
             var target = Tuple.Create(newX, newY);
-            var targetPiece = board.getTile(x, y);
+            var originalPiece = board.getTile(newX, newY);
 
             if (normal.Contains(target))
             {
@@ -133,7 +133,7 @@ namespace ChessProject3
             {
                 board.tile[x, y].specialMoveSet = false;
                 board.moveTile(x, y, newX, newY);
-                if (targetPiece.isSameAs(ePiece.kingW))
+                if (originalPiece != null && originalPiece.isSameAs(ePiece.kingW))
                 {
                     //newX-1 = right hand side move
                     int dx = x < newX ? newX - 1 : newX + 1;
@@ -150,12 +150,18 @@ namespace ChessProject3
                         }
                     }
                 }
+                else
+                {
+                    return true;
+                }
             }
             return false;
         }
 
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
+            if (oldX != newX && oldY!=newY)
+            {
             int startX;
             int startY;
             int multiplier;
@@ -203,6 +209,7 @@ namespace ChessProject3
                     return true;
                 }
 
+            }
             }
             return false;
         }
@@ -265,8 +272,9 @@ namespace ChessProject3
                 }
 
                 else if (current.isSameAs(ePiece.queenW) &&
+                    (
                     anythingInTheWayRook(x, y, newX, newY) ||
-                    anythingInTheWayBishop(x, y, newX, newY))
+                    anythingInTheWayBishop(x, y, newX, newY)))
                 {
                     toRemove.Add(element);
                 }
@@ -295,7 +303,7 @@ namespace ChessProject3
             if (list != null)
             {
                 var current = board.getTile(x, y);
-                //COPY PASTED, CARE
+
                 List<Tuple<int, int>> toRemove = new List<Tuple<int, int>>();
                 if (current.isSameAs(ePiece.pawnW))
                 {
@@ -328,24 +336,24 @@ namespace ChessProject3
             if (pastMoves.Count > 0)
             {
                 Move lastMove = pastMoves.Last();
-                iPiece target = board.getTile(lastMove.dx, lastMove.dy);
+                iPiece lastMoveTarget = board.getTile(lastMove.dx, lastMove.dy);
 
-                if (target != null)
+                if (lastMoveTarget != null)
                 {
-
                     if (current.getId() == ePiece.pawnW &&
-                        target.getId() == ePiece.pawnB)
+                        lastMoveTarget.getId() == ePiece.pawnB)
                     {
                         if (lastMove.y == 1 && lastMove.dy == 3) // if target moved 2 down
                         {
                             if (mv.x == lastMove.dx + 1 || mv.x == lastMove.dx - 1)
                             {
-                                board.tile[lastMove.dx, lastMove.y] = null;
+                                board.tile[lastMove.dx, lastMove.dy] = null;
+
                                 return true;
                             }
                         }
                     }
-                    else
+                    else //else if copy above if
                     {
 
                     }
@@ -367,8 +375,7 @@ namespace ChessProject3
                     if (filterEnPassant(x, y, piece.Item1, piece.Item2))
                     { continue; }
 
-                    if (target == null ||
-                            pieceTakeAllyPiece(current, target))
+                    if (target == null)
                     {
                         toRemove.Add(piece);
                     }
@@ -468,7 +475,7 @@ namespace ChessProject3
             foreach (Tuple<int, int> element in list)
             {
                 iPiece target = board.getTile(element.Item1, element.Item2);
-                if (target != null)
+                if (target != null && current != null)
                 {
                     if (pieceTakeAllyPiece(current, target))
                     {

@@ -10,7 +10,6 @@ namespace ChessProject3
     public class Board
     {
        public iPiece[,] tile;
-        iPiece[] pieceMap = new iPiece[13];
  
         public Board(int x, int y)
         {

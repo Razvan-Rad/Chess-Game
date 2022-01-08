@@ -32,7 +32,6 @@ namespace ChessProject3
         {
             return x == selected.X && y == selected.Y;
         }
-
         public void clickTile(int x, int y)
         {
             if (!alreadySelectedASquare) //Select first piece
@@ -47,14 +46,15 @@ namespace ChessProject3
             }
             else //select 2nd piece
             {
-                if (!isSamePiece(x, y) && game.movePiece(selected.X, selected.Y, x, y))
+                if (!isSamePiece(x, y) && game.movePiece(selected.X, selected.Y, x, y)) //move confirmed
                 {
-                    selected = new Point(x, y);
 
                     //post move
                     game.round++;
-                    Move mv = new Move(x, y, selected.X, selected.Y);
+                    Move mv = new Move( selected.X, selected.Y,x,y);
+                    selected = new Point(x, y);
                     game.pastMoves.Add(mv);
+                    
                 }
                 alreadySelectedASquare = false;
                 painter.draw(true);

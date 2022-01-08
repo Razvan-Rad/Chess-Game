@@ -156,30 +156,54 @@ namespace ChessProject3
 
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
-            // sort the lower X and get the higher X accordingly
-            var startX = oldX < newX ? oldX : newX;
-            var finishX = oldX > newX ? oldX : newX;
-
-            var startY = oldY;
-            var finishY = newY;
-
-
-            var iterMultiplier = newY < oldY ? -1 : 1;
-            // if we go from the new to the old, because the old is smaller
-            if (startX == newX)
+            int startX;
+            int startY;
+            int multiplier;
+            int finalX;
+            int finalY;
+            if(oldX < newX)
             {
-                //take the correct y
-                startY = newY;
-                // we go from new to old, so 
-                finishY = oldY;
-                iterMultiplier = startY < finishY ? -1 : 1;
+                startX = oldX;
+                finalX = newX;
+
+                startY = oldY;
+                finalY = newY;
+
+                if (oldY < newY)
+                {
+                    multiplier = 1;
+                }
+                else
+                {
+                    multiplier = -1;
+                }
+
             }
-            for (; startX < finishX && startY < finishY; startX += 1,startY+=iterMultiplier)
-                if (board.getTile(startX, startY) != null)
+            else
+            {
+                startX = newX;
+                startY = newY;
+                finalX = oldX;
+                finalY = oldY;
+                if (oldY < newY)
+                {
+                    multiplier = -1;
+                }
+                else
+                {
+                    multiplier = 1;
+                }
+            }
+            for(int i = startX+1, j=startY+multiplier; 
+                i < finalX; i++, j+=multiplier)
+            {
+
+                if (board.getTile(i, j) != null)
                 {
                     return true;
                 }
 
+            }
             return false;
         }
         bool anythingInTheWayRook(int oldX, int oldY, int newX, int newY)

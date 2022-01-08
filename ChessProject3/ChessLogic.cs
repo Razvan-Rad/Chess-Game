@@ -156,22 +156,29 @@ namespace ChessProject3
 
         bool anythingInTheWayBishop(int oldX, int oldY, int newX, int newY)
         {
+            // sort the lower X and get the higher X accordingly
             var startX = oldX < newX ? oldX : newX;
             var finishX = oldX > newX ? oldX : newX;
 
             var startY = oldY;
+            var finishY = newY;
 
-            int iterMultiplier;
+
+            var iterMultiplier = newY < oldY ? -1 : 1;
+            // if we go from the new to the old, because the old is smaller
             if (startX == newX)
             {
+                //take the correct y
                 startY = newY;
-                iterMultiplier = newY < oldY ? -1 : 1;
+                // we go from new to old, so 
+                finishY = oldY;
+                iterMultiplier = startY < finishY ? -1 : 1;
             }
-            for(;startX !=)
-            //if (board.getTile(i, j) != null)
-            //{
-            //return true;
-            //}
+            for (; startX < finishX && startY < finishY; startX += 1,startY+=iterMultiplier)
+                if (board.getTile(startX, startY) != null)
+                {
+                    return true;
+                }
 
             return false;
         }

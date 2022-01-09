@@ -116,12 +116,71 @@ namespace ChessProject3
             return moveset;
         }
 
+        bool isCheck(bool color)
+        {
+            Tuple<int, int> king = null;
+            ePiece target = color ?ePiece.kingB : ePiece.kingW; //if white is vulnerable
+
+            HashSet<Tuple<int, int>> list = new HashSet<Tuple<int, int>>();
+            for(int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    // Find king
+                    var tile = board.getTile(i, j);
+                    if(tile != null)
+                        if( tile.getId() == target)
+                    {
+                        king = new Tuple<int, int>(i, j);
+                    }
+
+                    // Find threatening moves
+                    if (tile != null) 
+                    {
+                        if(color ^ (int)tile.getId() > 6)
+                        {
+                            var tmp = getAllMoves(i, j);
+                            for (int k = 0; k < tmp.Count; k++)
+                            {
+                                list.Add(tmp[k]);
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            if (king == null)
+            {
+                return true;
+            }
+            
+            if(list.Contains(king))
+            {
+                return true;
+            }
+            return false;
+        }
         public bool movePiece(int x, int y, int newX, int newY)
         {
             List<Tuple<int, int>> normal = getAllNormalMoves(x, y);
             List<Tuple<int, int>> special = getAllSpecialMoves(x, y);
-            var target = Tuple.Create(newX, newY);
             var originalPiece = board.getTile(newX, newY);
+            var target = Tuple.Create(newX, newY);
+
+            // Check if it's check
+            var temp = board.tile[x, y];
+            var temp2 = board.tile[newX, newY];
+            board.tile[newX, newY] = temp;
+            board.tile[x, y] = null;
+            bool shouldRet = false;
+            if (isCheck(round%2 != 0))
+                shouldRet = true;
+
+            board.tile[x, y] = temp;
+            board.tile[newX, newY] = temp2;
+            if (shouldRet)
+                return false;
+
 
             if (normal.Contains(target))
             {
@@ -363,7 +422,7 @@ namespace ChessProject3
                     lastMoveTarget.getId() == ePiece.pawnW)
                 {
                     if (lastMove.y == 6 && lastMove.dy == 4) // if target moved 2 down
-                    {
+                    {   
                         if (dx == lastMove.dx)
                         {
                             wasEnPassant = new Tuple<int, int>(lastMove.dx, lastMove.dy);
@@ -428,13 +487,7 @@ namespace ChessProject3
             moveset = filterPieceTakeAllyPiece(x, y, moveset);
             moveset = filterAnythingInTheWay(x, y, moveset);
 
-            //// after move, is there check?
-            //if (isCheck()) ret = false;
             return moveset;
-        }
-        bool isCheck()
-        {
-            return false;
         }
         public static List<Tuple<int, int>> getDynamicBishopMoves(int pieceX, int pieceY)
         {

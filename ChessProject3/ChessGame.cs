@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
 using System.Numerics;
 using System.Windows.Forms;
 namespace ChessProject3
@@ -13,8 +14,12 @@ namespace ChessProject3
         Point selected;
         PanelPainter painter;
         ChessLogic game;
+
+
         public ChessGame(Panel p, int maxX, int maxY)
         {
+
+
             //vars
             board = new Board(maxX, maxY);
             int squareSize = 60;
@@ -54,7 +59,7 @@ namespace ChessProject3
                     Move mv = new Move( selected.X, selected.Y,x,y);
                     selected = new Point(x, y);
                     game.pastMoves.Add(mv);
-                    
+                    game.updatePromotion();
                 }
                 alreadySelectedASquare = false;
                 painter.draw(true);

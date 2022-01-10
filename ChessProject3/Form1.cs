@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 namespace ChessProject3
 {
     public partial class Form1 : Form
@@ -30,9 +32,9 @@ namespace ChessProject3
             int x = point.X / 60;
             int y = point.Y / 60;
             if ((x < 8 && y < 8) && (x >= 0 && y >= 0))
-            { 
+            {
                 game.clickTile(x, y);
-                
+
 
             }
             //MessageBox.Show("x: " + x.ToString(), y.ToString());
@@ -43,3 +45,4 @@ namespace ChessProject3
         }
     }
 }
+    

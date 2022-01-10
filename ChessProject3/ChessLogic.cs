@@ -160,6 +160,25 @@ namespace ChessProject3
             }
             return false;
         }
+        public void updatePromotion()
+        {
+            for(int i = 0; i < 8;i++)
+            {
+                var current = board.getTile(i, 0);
+                var current2 = board.getTile(i, 7);
+                if (current !=null)
+                    if (current.getId() == ePiece.pawnW)
+                    {
+                        board.tile[i,0] = new Queen();
+                    }
+                
+                if (current2 != null)
+                    if (current2.getId() == ePiece.pawnB)
+                    {
+                        board.tile[i, 7] = new Queen(true);
+                    }
+            }
+        }
         public bool movePiece(int x, int y, int newX, int newY)
         {
             List<Tuple<int, int>> normal = getAllNormalMoves(x, y);
@@ -180,7 +199,7 @@ namespace ChessProject3
             board.tile[newX, newY] = temp2;
             if (shouldRet)
                 return false;
-
+            // done checking for check
 
             if (normal.Contains(target))
             {

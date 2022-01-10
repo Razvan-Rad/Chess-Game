@@ -168,6 +168,53 @@ namespace ChessProject3
                     }
             }
         }
+        public bool movePieceForce(int x, int y, int newX, int newY)
+        {
+            List<Tuple<int, int>> normal = getAllNormalMoves(x, y);
+            List<Tuple<int, int>> special = getAllSpecialMoves(x, y);
+            var originalPiece = board.getTile(newX, newY);
+            var target = Tuple.Create(newX, newY);
+
+            if (normal.Contains(target))
+            {
+                board.tile[x, y].specialMoveSet = false;
+                board.moveTile(x, y, newX, newY);
+                if (wasEnPassant != null)
+                {
+                    board.tile[wasEnPassant.Item1, wasEnPassant.Item2] = null;
+                    wasEnPassant = null;
+                }
+                return true;
+            }
+
+            if (special.Contains(target))
+            {
+                board.tile[x, y].specialMoveSet = false;
+                board.moveTile(x, y, newX, newY);
+                if (originalPiece != null && originalPiece.isSameAs(ePiece.kingW))
+                {
+                    //newX-1 = right hand side move
+                    int dx = x < newX ? newX - 1 : newX + 1;
+                    int sx = dx == newX - 1 ? 7 : 0;
+                    var targetRook = board.getTile(sx, y);
+
+
+                    if (targetRook != null)
+                    {
+                        if (targetRook.isSameAs(ePiece.rookW) && targetRook.specialMoveSet)
+                        {
+                            board.moveTile(sx, y, dx, newY);
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public bool movePiece(int x, int y, int newX, int newY)
         {
             List<Tuple<int, int>> normal = getAllNormalMoves(x, y);

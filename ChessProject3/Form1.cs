@@ -17,8 +17,18 @@ namespace ChessProject3
 
 
         public static string data = null;
+        public static string toSend = null;
+        public static string received = null;
         public static bool server = false;
         public static bool client = false;
+        static Socket handler; 
+        static Socket sender;
+        public static void sendData(int x, int y, int dx, int dy)
+        {
+            var moves = new byte[] { (byte)x, (byte)y, (byte)dx, (byte)dy };
+            if(server) handler.Send(moves);
+            if (client) sender.Send(moves);
+        }
         public void StartServer()
         {
             IPAddress ipAddress = IPAddress.Parse(textBox1.Text);
@@ -32,27 +42,16 @@ namespace ChessProject3
                 // We will listen 10 requests at a time
                 listener.Listen(10);
 
-                Socket handler = listener.Accept();
+                handler = listener.Accept();
 
                 byte[] bytes = null;
 
                 while (true)
                 {
-                    bytes = new byte[1024];
+                    bytes = new byte[4];
                     int bytesRec = handler.Receive(bytes);
-                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                    if (data.IndexOf("<EOF>") > -1)
-                    {
-                        break;
-                    }
-                }
-
-                Console.WriteLine("Text received : {0}", data);
-
-                byte[] msg = Encoding.ASCII.GetBytes(data);
-                handler.Send(msg);
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                    data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                }   
             }
             catch (Exception e)
             {
@@ -71,22 +70,16 @@ namespace ChessProject3
         /// 
         /// </summary>
 
-        public static void StartClient()
+        public void StartClient()
         {
-            byte[] bytes = new byte[1024];
 
             try
             {
-                // Connect to a Remote server
-                // Get Host IP Address that is used to establish a connection
-                // In this case, we get one IP address of localhost that is IP : 127.0.0.1
-                // If a host has multiple addresses, you will get a list of addresses
-                IPHostEntry host = Dns.GetHostEntry("localhost");
-                IPAddress ipAddress = host.AddressList[0];
+                IPAddress ipAddress = IPAddress.Parse(textBox1.Text);
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, 23);
 
                 // Create a TCP/IP  socket.
-                Socket sender = new Socket(ipAddress.AddressFamily,
+                 sender = new Socket(ipAddress.AddressFamily,
                     SocketType.Stream, ProtocolType.Tcp);
 
                 // Connect the socket to the remote endpoint. Catch any errors.
@@ -97,22 +90,15 @@ namespace ChessProject3
 
                     Console.WriteLine("Socket connected to {0}",
                         sender.RemoteEndPoint.ToString());
+                    while(true)
+                    {
 
-                    // Encode the data string into a byte array.
-                    byte[] msg = Encoding.ASCII.GetBytes("This is a test<EOF>");
-
-                    // Send the data through the socket.
-                    int bytesSent = sender.Send(msg);
-
-                    // Receive the response from the remote device.
-                    int bytesRec = sender.Receive(bytes);
-                    Console.WriteLine("Echoed test = {0}",
-                        Encoding.ASCII.GetString(bytes, 0, bytesRec));
-
-                    // Release the socket.
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Close();
-
+                        // Receive the response from the remote device.
+                        byte[] bytes = new byte[4];
+                        int bytesRec = sender.Receive(bytes);
+                       data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        // Move ready
+                    }
                 }
                 catch (ArgumentNullException ane)
                 {

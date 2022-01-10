@@ -34,13 +34,22 @@ namespace ChessProject3
         {
             return x == selected.X && y == selected.Y;
         }
-        void sendData(int x, int y, int dx, int dy)
-        {
-
-        }
         public void clickTile(int x, int y)
         {
-
+            if(Form1.data!=null)
+            {
+                int coord1 =Form1.data[0] - 48;
+                int coord2 = Form1.data[1] - 48;
+                int coord3 = Form1.data[2] - 48;
+                int coord4 = Form1.data[3]-48;
+                game.movePieceForce(coord1, coord2, coord3, coord4);
+                Form1.data= null;
+                game.round++;
+                Move mv = new Move(selected.X, selected.Y, x, y);
+                selected = new Point(x, y);
+                game.pastMoves.Add(mv);
+                game.updatePromotion();
+            }
             if (!alreadySelectedASquare) //Select first piece
             {
                 if (game.squareSelectionSuccess(x, y))
@@ -81,12 +90,10 @@ namespace ChessProject3
 
                 if (!isSamePiece(x, y) && game.movePiece(selected.X, selected.Y, x, y)) //move confirmed
                 {
-
-
+                    Form1.sendData(selected.X, selected.Y, x, y);
 
                     //post move
                     game.round++;
-                    sendData(selected.X, selected.Y, x, y);
                     Move mv = new Move(selected.X, selected.Y, x, y);
                     selected = new Point(x, y);
                     game.pastMoves.Add(mv);

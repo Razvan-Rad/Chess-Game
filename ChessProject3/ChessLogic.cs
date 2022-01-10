@@ -56,17 +56,6 @@ namespace ChessProject3
             }
             return false;
         }
-        public void nextRound()
-        {
-            if (round % 2 == 0)
-            {
-            }
-            else
-            {
-            }
-            round++;
-
-        }
         void initPiecesDefault()
         {
             bool black = true;

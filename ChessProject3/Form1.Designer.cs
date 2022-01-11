@@ -33,7 +33,6 @@ namespace ChessProject3
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.IP = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -46,7 +45,6 @@ namespace ChessProject3
             // 
             this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.panel1.Controls.Add(this.button2);
-            this.panel1.Controls.Add(this.textBox3);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.IP);
             this.panel1.Controls.Add(this.button1);
@@ -68,13 +66,6 @@ namespace ChessProject3
             this.button2.Text = "Host Game";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(542, 148);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 23);
-            this.textBox3.TabIndex = 5;
             // 
             // label2
             // 
@@ -117,6 +108,7 @@ namespace ChessProject3
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 23);
             this.textBox1.TabIndex = 0;
+            this.textBox1.Text = "127.0.0.1";
             // 
             // Form1
             // 

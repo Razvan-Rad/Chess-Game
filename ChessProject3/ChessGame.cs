@@ -43,13 +43,16 @@ namespace ChessProject3
                 int coord3 = Form1.data[2] - 48;
                 int coord4 = Form1.data[3]-48;
                 game.movePieceForce(coord1, coord2, coord3, coord4);
-                Form1.data= null;
+                Form1.data = null;
                 game.round++;
                 Move mv = new Move(selected.X, selected.Y, x, y);
                 selected = new Point(x, y);
                 game.pastMoves.Add(mv);
                 game.updatePromotion();
             }
+
+
+
             if (!alreadySelectedASquare) //Select first piece
             {
                 if (game.squareSelectionSuccess(x, y))
@@ -74,7 +77,7 @@ namespace ChessProject3
                         return;
                     }
                 }
-                if (Form1.client)
+                else if (Form1.client)
                 {
                     if (game.round % 2 == 0)
                     {

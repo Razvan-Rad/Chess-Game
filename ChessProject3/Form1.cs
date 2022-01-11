@@ -23,25 +23,27 @@ namespace ChessProject3
         public static bool client = false;
         static Socket handler; 
         static Socket sender;
+        Socket listener;
         public static void sendData(int x, int y, int dx, int dy)
         {
-            var moves = new byte[] { (byte)x, (byte)y, (byte)dx, (byte)dy };
-            if(server) handler.Send(moves);
-            if (client) sender.Send(moves);
+            var moves = new byte[] { (byte)(x+48), (byte)(y + 48), (byte)(dx + 48), (byte)(dy + 48 )};
+            if (server)
+            {
+                handler.Send(moves);
+            }
+            if (client)
+            {
+                sender.Send(moves);
+            }
         }
         public void StartServer()
         {
             IPAddress ipAddress = IPAddress.Parse(textBox1.Text);
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(textBox2.Text));
+            listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            listener.Bind(localEndPoint);
 
-            try
-            {
-                Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                listener.Bind(localEndPoint);
-                // Specify how many requests a Socket can listen before it gives Server busy response.
-                // We will listen 10 requests at a time
                 listener.Listen(10);
-
                 handler = listener.Accept();
 
                 byte[] bytes = null;
@@ -52,14 +54,6 @@ namespace ChessProject3
                     int bytesRec = handler.Receive(bytes);
                     data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
                 }   
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-
-            Console.WriteLine("\n Press any key to continue...");
-            Console.ReadKey();
         }
         /// <summary>
         ///////

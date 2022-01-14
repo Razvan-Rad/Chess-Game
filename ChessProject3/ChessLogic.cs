@@ -89,7 +89,7 @@ namespace ChessProject3
             board.getTile(4, 3) = new Queen();
         }
         public List<Tuple<int, int>> getAllSpecialMoves(int x, int y)
-        {// parse -> filter -> get
+        {
             var specialMoveset = board.getTile(x, y).parseSpecialMoveList(x, y);
             return filterSpecial(x, y, specialMoveset);
         }
@@ -168,7 +168,7 @@ namespace ChessProject3
                     }
             }
         }
-        public bool movePieceForce(int x, int y, int newX, int newY)
+        public bool movePieceRetea(int x, int y, int newX, int newY)
         {
             List<Tuple<int, int>> normal = getAllNormalMoves(x, y);
             List<Tuple<int, int>> special = getAllSpecialMoves(x, y);

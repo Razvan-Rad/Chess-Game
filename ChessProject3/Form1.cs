@@ -114,15 +114,6 @@ namespace ChessProject3
             }
         }
 
-        /// <summary>
-        ///////
-        ///
-        /// 
-        /// 
-        /// 
-        /// 
-        /// </summary>
-
         ChessGame game;
         public Form1()
         {
@@ -168,5 +159,9 @@ namespace ChessProject3
 
         }
 
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
 }

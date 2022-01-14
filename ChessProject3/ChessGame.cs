@@ -41,8 +41,8 @@ namespace ChessProject3
                 int coord1 =Form1.data[0] - 48;
                 int coord2 = Form1.data[1] - 48;
                 int coord3 = Form1.data[2] - 48;
-                int coord4 = Form1.data[3]-48;
-                game.movePieceForce(coord1, coord2, coord3, coord4);
+                int coord4 = Form1.data[3] -48;
+                game.movePieceRetea(coord1, coord2, coord3, coord4);
                 Form1.data = null;
                 game.round++;
                 Move mv = new Move(selected.X, selected.Y, x, y);
@@ -52,18 +52,17 @@ namespace ChessProject3
             }
 
 
-
-            if (!alreadySelectedASquare) //Select first piece
+            if (!alreadySelectedASquare) // Select first piece
             {
                 if (game.squareSelectionSuccess(x, y))
                 {
                     selected = new Point(x, y);
                     //Drawing range
                     alreadySelectedASquare = true;
-                    painter.paintRange(game.getAllMoves(x, y));
+                    painter.draw(true);
                 }
             }
-            else //select 2nd piece
+            else // Select 2nd piece
             {
 
                 //MOVE SAFEGUARD
@@ -72,8 +71,6 @@ namespace ChessProject3
                     if (game.round % 2 == 1)
                     {
                         alreadySelectedASquare = false;
-                        painter.draw(true);
-
                         return;
                     }
                 }
@@ -82,8 +79,6 @@ namespace ChessProject3
                     if (game.round % 2 == 0)
                     {
                         alreadySelectedASquare = false;
-                        painter.draw(true);
-
                         return;
 
 

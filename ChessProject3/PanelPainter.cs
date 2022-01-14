@@ -27,9 +27,9 @@ namespace ChessProject3
             bm = new Bitmap(squareSize * 12, squareSize * 12);
             refreshBg(squareSize);
         }
-        public void paintRange(List<Tuple<int, int>> list)
+        public void paintRange(bool refrBg, List<Tuple<int, int>> list)
         {
-            draw();
+            draw(refrBg);
             using (Graphics g = Graphics.FromImage(p.BackgroundImage))
             using (SolidBrush pinkBrush = new SolidBrush(Color.FromArgb(129, Color.Pink)))
                 for (int i = 0; i < list.Count; i++)

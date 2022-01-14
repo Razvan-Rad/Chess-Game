@@ -59,7 +59,7 @@ namespace ChessProject3
                     selected = new Point(x, y);
                     //Drawing range
                     alreadySelectedASquare = true;
-                    painter.draw(true);
+                    painter.paintRange(true, game.getAllMoves(x, y));
                 }
             }
             else // Select 2nd piece
